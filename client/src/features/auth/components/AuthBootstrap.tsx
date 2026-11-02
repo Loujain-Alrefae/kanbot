@@ -1,41 +1,96 @@
-import { useEffect, useState, type ReactNode } from "react"
+import { useEffect, type ReactNode } from "react"
+import { useQuery } from "@tanstack/react-query"
 import { authApi } from "@/api/auth"
-import { useAuthStore } from "@/store/auth.store"
+import { ErrorState } from "@/components/ErrorState"
 import { Spinner } from "@/components/Spinner"
+import { Button } from "@/components/ui/button"
+import { useAuthStore } from "@/store/auth.store"
+import { useLogout } from "../hooks/useLogout"
 
 export function AuthBootstrap({ children }: { children: ReactNode }) {
     const token = useAuthStore((s) => s.token)
     const user = useAuthStore((s) => s.user)
-    const [loading, setLoading] = useState(Boolean(token && !user))
+    const setUser = useAuthStore((s) => s.setUser)
+    const logout = useLogout()
+
+    // A token is persisted but the user is not: fetch it once (AUTH-3).
+    const needsUser = Boolean(token && !user)
+    const me = useQuery({
+        queryKey: ["auth", "me"],
+        queryFn: authApi.me,
+        enabled: needsUser,
+        retry: false,
+    })
 
     useEffect(() => {
-        if (!token || user) {
-            setLoading(false)
-            return
-        }
-        let cancelled = false
-        authApi.me().then((res) => {
-            if (!cancelled) useAuthStore.getState().setUser(res.user)
-        })
-        .catch(() => {
-            // 401 is already handled by the API client; any other failure also ends the session.
-            useAuthStore.getState().clearSession()
-        })
-        .finally(() => {
-            if (!cancelled) setLoading(false)
-        })
-        return () => {
-        cancelled = true
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on app start
-    }, [])
+        if (me.data) setUser(me.data.user)
+    }, [me.data, setUser])
 
-    if (loading) {
+    if (!needsUser) return <>{children}</>
+
+    // A 401 never lands here: the API client clears the session, the token disappears,
+    // needsUser becomes false and the route guard sends the user to /login with a toast.
+    // Anything else (server down, 5xx) keeps the session and lets the user retry.
+    if (me.isError) {
         return (
-        <div className="flex min-h-screen items-center justify-center">
-            <Spinner />
+        <div className="flex min-h-dvh items-center justify-center p-6">
+            <div className="w-full max-w-md">
+            <ErrorState title="Can't reach Kanbot" message={me.error.message} onRetry={() => me.refetch()}>
+                <Button variant="ghost" onClick={logout}>
+                Log out
+                </Button>
+            </ErrorState>
+            </div>
         </div>
         )
     }
-    return <>{children}</>
+
+    return (
+        <div className="flex min-h-dvh items-center justify-center">
+        <Spinner />
+        </div>
+    )
 }
+
+
+// import { useEffect, useState, type ReactNode } from "react"
+// import { authApi } from "@/api/auth"
+// import { useAuthStore } from "@/store/auth.store"
+// import { Spinner } from "@/components/Spinner"
+
+// export function AuthBootstrap({ children }: { children: ReactNode }) {
+//     const token = useAuthStore((s) => s.token)
+//     const user = useAuthStore((s) => s.user)
+//     const [loading, setLoading] = useState(Boolean(token && !user))
+
+//     useEffect(() => {
+//         if (!token || user) {
+//             setLoading(false)
+//             return
+//         }
+//         let cancelled = false
+//         authApi.me().then((res) => {
+//             if (!cancelled) useAuthStore.getState().setUser(res.user)
+//         })
+//         .catch(() => {
+//             // 401 is already handled by the API client; any other failure also ends the session.
+//             useAuthStore.getState().clearSession()
+//         })
+//         .finally(() => {
+//             if (!cancelled) setLoading(false)
+//         })
+//         return () => {
+//         cancelled = true
+//         }
+//         // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on app start
+//     }, [])
+
+//     if (loading) {
+//         return (
+//         <div className="flex min-h-screen items-center justify-center">
+//             <Spinner />
+//         </div>
+//         )
+//     }
+//     return <>{children}</>
+// }
