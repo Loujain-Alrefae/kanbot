@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 import type { ReactNode } from "react"
 import { useParams } from "react-router"
-import { toast } from "sonner"
+import { TodoDetailsDialog } from "@/features/todos/components/TodoDetailsDialog"
 import { ErrorState } from "@/components/ErrorState"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { useDebouncedValue } from "@/hooks/useDebouncedValue"
@@ -24,7 +24,8 @@ export function BacklogPage() {
 }
 
 function BacklogView({ projectId }: { projectId: string }) {
-  const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS)
+    const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS)
+    const [selectedTodoId, setSelectedTodoId] = useState<string | null>(null)
 
   // The input updates instantly; the request only follows 300ms after the last keystroke (NFR-6).
     const debouncedSearch = useDebouncedValue(filters.search, 300)
@@ -55,7 +56,7 @@ function BacklogView({ projectId }: { projectId: string }) {
 
   // TODO (Step 6): open TodoDetailsDialog instead of this temporary toast.
     function handleOpenTodo(todo: Todo) {
-        toast.info(`Details for ${todo.key} arrive in Step 6`)
+        setSelectedTodoId(todo.id)
     }
 
   // Order matters: check the error BEFORE the data, so stale cached data is never shown after a failure.
@@ -78,19 +79,22 @@ function BacklogView({ projectId }: { projectId: string }) {
 
     return (
         <>
-        <PageHeader title="Backlog" meta={planningTodos ? summarizeTodos(planningTodos) : undefined} />
-        <div className="space-y-4 p-6">
-            {/* Outside the loading switch: the search box must keep its focus while results reload. */}
-            <BacklogToolbar filters={filters} onChange={updateFilters} onClear={() => setFilters(EMPTY_FILTERS)} />
+            <PageHeader title="Backlog" meta={planningTodos ? summarizeTodos(planningTodos) : undefined} />
+            <div className="space-y-4 p-6">
+                {/* Outside the loading switch: the search box must keep its focus while results reload. */}
+                <BacklogToolbar filters={filters} onChange={updateFilters} onClear={() => setFilters(EMPTY_FILTERS)} />
 
-            {/* While a new search loads, the previous list stays visible but dimmed. */}
-            <div
-            aria-busy={backlog.isPlaceholderData}
-            className={cn("transition-opacity", backlog.isPlaceholderData && "opacity-60")}
-            >
-            {content}
+                {/* While a new search loads, the previous list stays visible but dimmed. */}
+                <div
+                aria-busy={backlog.isPlaceholderData}
+                className={cn("transition-opacity", backlog.isPlaceholderData && "opacity-60")}
+                >
+                {content}
+                </div>
             </div>
-        </div>
+            {selectedTodoId && (
+                <TodoDetailsDialog projectId={projectId} todoId={selectedTodoId} onClose={() => setSelectedTodoId(null)} />
+            )}
         </>
     )
 }
