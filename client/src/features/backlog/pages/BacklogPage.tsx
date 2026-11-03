@@ -50,6 +50,8 @@ function BacklogView({ projectId }: { projectId: string }) {
         return allTodos.data.filter((t) => t.sprintId === null || plannedIds.has(t.sprintId))
     }, [allTodos.data, sprints.data])
 
+    const moveTargets = useMemo(() => (sprints.data ?? []).filter((s) => s.status !== "completed"), [sprints.data])
+
     function updateFilters(patch: Partial<FilterState>) {
         setFilters((current) => ({ ...current, ...patch }))
     }
@@ -70,10 +72,11 @@ function BacklogView({ projectId }: { projectId: string }) {
         <BacklogSection
             projectId={projectId}
             todos={backlog.data}
+            moveTargets={moveTargets}
             onOpenTodo={handleOpenTodo}
             filtersActive={filtersActive}
             onClearFilters={() => setFilters(EMPTY_FILTERS)}
-        />
+            />
         )
     }
 

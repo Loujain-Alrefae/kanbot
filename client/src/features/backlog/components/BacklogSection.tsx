@@ -2,7 +2,7 @@ import { EmptyState } from "@/components/EmptyState"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { summarizeTodos } from "@/lib/todo"
-import type { Todo } from "@/types/api"
+import type { Sprint,Todo } from "@/types/api"
 import { QUICK_CREATE_INPUT_ID } from "../constants"
 import { QuickCreate } from "./QuickCreate"
 import { TodoRow } from "./TodoRow"
@@ -10,13 +10,15 @@ import { TodoRow } from "./TodoRow"
 interface BacklogSectionProps {
     projectId: string
     todos: Todo[]
+    /** Planned and active sprints: targets of the row menu's "Move to…". */
+    moveTargets: Sprint[]
     onOpenTodo: (todo: Todo) => void
     /** true when a search or filter is applied: an empty list then means "no match", not "empty backlog". */
     filtersActive: boolean
     onClearFilters: () => void
 }
 
-export function BacklogSection({ projectId, todos, onOpenTodo, filtersActive, onClearFilters }: BacklogSectionProps) {
+export function BacklogSection({ projectId, todos, moveTargets, onOpenTodo, filtersActive, onClearFilters}: BacklogSectionProps)  {
     return (
         <section
         aria-labelledby="backlog-heading"
@@ -52,8 +54,7 @@ export function BacklogSection({ projectId, todos, onOpenTodo, filtersActive, on
         ) : (
             <ul>
             {todos.map((todo) => (
-                <TodoRow key={todo.id} todo={todo} onOpen={onOpenTodo} />
-            ))}
+                <TodoRow key={todo.id} todo={todo} moveTargets={moveTargets} onOpen={onOpenTodo} />            ))}
             </ul>
         )}
 
