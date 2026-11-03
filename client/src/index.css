@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/geist";
+@import "@fontsource-variable/inter";
 
 
 @custom-variant dark (&:is(.dark *));
@@ -29,6 +29,9 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-text: var(--destructive-text);
+  --color-destructive-subtle: var(--destructive-subtle);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -58,7 +61,11 @@
   --muted-foreground: #58577F;
   --accent: #EEEDFF;
   --accent-foreground: #3730A3;
+  /* destructive: solid fill (buttons) / text + icons / soft badge background */
   --destructive: #B42318;
+  --destructive-foreground: #ffffff;
+  --destructive-text: #B42318;
+  --destructive-subtle: #FDECEA;
   --border: #D9D7F0;
   --input: #D9D7F0;
   --ring: #4F46E5;
@@ -83,11 +90,16 @@
   --primary-foreground: #ffffff;
   --secondary: #2A2E38;
   --secondary-foreground: #E2E5EC;
-  --muted: #1A1D24;
+  /* between --card (#1F222A) and --accent (#2A2E38) */
+  --muted: #242831;
   --muted-foreground: #9AA1B0;
   --accent: #2A2E38;
   --accent-foreground: #C7C9FF;
-  --destructive: #FCA5A5;
+  /* solid fill keeps white text readable (4.8:1); light red moves to --destructive-text */
+  --destructive: #DC2626;
+  --destructive-foreground: #ffffff;
+  --destructive-text: #FCA5A5;
+  --destructive-subtle: #3B1D22;
   --border: #343845;
   --input: #343845;
   --ring: #787CF5;
@@ -115,5 +127,11 @@
     margin: 0;
     padding: 0;
     min-height: 100dvh;
+  }
+
+  /* Pointer cursor for buttons and button-like elements (shadcn/ui, Radix triggers) */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]):not(:disabled) {
+    cursor: pointer;
   }
 }
