@@ -15,9 +15,10 @@ const ERROR_ID = "quick-create-error"
 
 interface QuickCreateProps {
     projectId: string
+    filtersActive?: boolean
 }
 
-export function QuickCreate({ projectId }: QuickCreateProps) {
+export function QuickCreate({ projectId, filtersActive = false }: QuickCreateProps) {
     const [title, setTitle] = useState("")
     const [error, setError] = useState<string | null>(null)
     const inputRef = useRef<HTMLInputElement>(null)
@@ -41,6 +42,10 @@ export function QuickCreate({ projectId }: QuickCreateProps) {
         onSuccess: () => {
             setTitle("")
             setError(null)
+            toast.success("Todo created", {
+                id: "todo-created",
+                description: filtersActive ? "It may be hidden by your current filters." : undefined,
+            })
           // The list just grew above this field: keep it in view so the next title can be typed.
             requestAnimationFrame(() => inputRef.current?.scrollIntoView({ block: "nearest" }))
         },
@@ -54,7 +59,7 @@ export function QuickCreate({ projectId }: QuickCreateProps) {
         },
     )
     }
-
+    
     function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
         if (event.key === "Escape") {
         setTitle("")

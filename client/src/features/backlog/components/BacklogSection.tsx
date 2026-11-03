@@ -11,9 +11,12 @@ interface BacklogSectionProps {
     projectId: string
     todos: Todo[]
     onOpenTodo: (todo: Todo) => void
+    /** true when a search or filter is applied: an empty list then means "no match", not "empty backlog". */
+    filtersActive: boolean
+    onClearFilters: () => void
 }
 
-export function BacklogSection({ projectId, todos, onOpenTodo }: BacklogSectionProps) {
+export function BacklogSection({ projectId, todos, onOpenTodo, filtersActive, onClearFilters }: BacklogSectionProps) {
     return (
         <section
         aria-labelledby="backlog-heading"
@@ -27,13 +30,25 @@ export function BacklogSection({ projectId, todos, onOpenTodo }: BacklogSectionP
         </header>
 
         {todos.length === 0 ? (
+            filtersActive ? (
             <EmptyState
-            title="Your backlog is empty"
-            description="Add your first todo to start planning."
-            action={
-                <Button onClick={() => document.getElementById(QUICK_CREATE_INPUT_ID)?.focus()}>Create todo</Button>
-            }
+                title="No todos match your filters"
+                description="Try a different search, or clear the filters."
+                action={
+                <Button variant="outline" onClick={onClearFilters}>
+                    Clear filters
+                </Button>
+                }
             />
+            ) : (
+            <EmptyState
+                title="Your backlog is empty"
+                description="Add your first todo to start planning."
+                action={
+                <Button onClick={() => document.getElementById(QUICK_CREATE_INPUT_ID)?.focus()}>Create todo</Button>
+                }
+            />
+            )
         ) : (
             <ul>
             {todos.map((todo) => (
@@ -43,14 +58,14 @@ export function BacklogSection({ projectId, todos, onOpenTodo }: BacklogSectionP
         )}
 
         {/* Always rendered, even with an empty list: the empty-state button above focuses this field. */}
-        <QuickCreate projectId={projectId} />
+        <QuickCreate projectId={projectId} filtersActive={filtersActive} />
         </section>
     )
 }
 
 export function BacklogSectionSkeleton() {
     return (
-    <div aria-busy="true" className="overflow-hidden rounded-lg border bg-card">
+        <div aria-busy="true" className="overflow-hidden rounded-lg border bg-card">
         <span className="sr-only">Loading backlog…</span>
         <div className="border-b bg-muted px-4 py-3">
             <Skeleton className="h-4 w-40 bg-border" />
