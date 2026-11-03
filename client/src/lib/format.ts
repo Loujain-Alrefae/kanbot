@@ -1,4 +1,4 @@
-import { format, parseISO } from "date-fns"
+import { addDays, format, parseISO } from "date-fns"
 
 /* parseISO reads "YYYY-MM-DD" as a LOCAL date (new Date("2026-11-03") would be UTC and can shift a day). */
 function formatOne(value: string): string {
@@ -18,4 +18,17 @@ export function formatDateRange(start: string | null, end: string | null): strin
     if (start) return `From ${formatOne(start)}`
     if (end) return `Until ${formatOne(end)}`
     return "No dates set"
+}
+
+/* Date-only strings ("YYYY-MM-DD") for <input type="date"> and the API. Local time, never UTC. */
+export function toISODate(date: Date): string {
+    return format(date, "yyyy-MM-dd")
+}
+
+export function todayISO(): string {
+    return toISODate(new Date())
+}
+
+export function addDaysISO(value: string, days: number): string {
+    return toISODate(addDays(parseISO(value), days))
 }

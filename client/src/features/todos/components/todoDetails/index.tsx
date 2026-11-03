@@ -1,54 +1,32 @@
-import type { ReactNode } from "react"
 import { Controller } from "react-hook-form"
 import type { UseFormReturn } from "react-hook-form"
 import { OptionSelect } from "@/components/OptionSelect"
 import type { SelectOption } from "@/components/OptionSelect"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { POINTS_OPTIONS, PRIORITY_OPTIONS, STATUS_OPTIONS, TYPE_OPTIONS } from "@/lib/todo"
 import { LabelsInput } from "../LabelsInput"
 import { MAX_LABEL_LENGTH, MAX_LABELS, NO_POINTS_VALUE, TODO_FORM_ID } from "./config"
 import type { TodoFormValues } from "./config"
+import { Field, describe } from "@/components/FormField"
 
 const POINT_SELECT_OPTIONS: SelectOption[] = [
   { value: NO_POINTS_VALUE, label: "None" },
   ...POINTS_OPTIONS.map((points) => ({ value: String(points), label: String(points) })),
 ]
 
-/* aria-describedby points at the error when there is one, otherwise at the hint. */
-function describe(id: string, error?: string, hint?: string): string | undefined {
-  if (error) return `${id}-error`
-  if (hint) return `${id}-hint`
-  return undefined
-}
 
-interface FieldProps {
-    id: string
-    label: string
-    error?: string
-    hint?: string
-    children: ReactNode
-}
 
-function Field({ id, label, error, hint, children }: FieldProps) {
-  return (
-    <div className="space-y-1.5">
-      <Label htmlFor={id}>{label}</Label>
-      {children}
-      {error ? (
-        <p id={`${id}-error`} role="alert" className="text-sm text-destructive-text">
-          {error}
-        </p>
-      ) : hint ? (
-        <p id={`${id}-hint`} className="text-xs text-muted-foreground">
-          {hint}
-        </p>
-      ) : null}
-    </div>
-  )
-}
+// interface FieldProps {
+//     id: string
+//     label: string
+//     error?: string
+//     hint?: string
+//     children: ReactNode
+// }
+
+
 
 interface SelectFieldProps {
   form: UseFormReturn<TodoFormValues>
