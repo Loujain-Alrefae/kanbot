@@ -4,14 +4,16 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { summarizeTodos } from "@/lib/todo"
 import type { Todo } from "@/types/api"
 import { QUICK_CREATE_INPUT_ID } from "../constants"
+import { QuickCreate } from "./QuickCreate"
 import { TodoRow } from "./TodoRow"
 
 interface BacklogSectionProps {
+    projectId: string
     todos: Todo[]
     onOpenTodo: (todo: Todo) => void
 }
 
-export function BacklogSection({ todos, onOpenTodo }: BacklogSectionProps) {
+export function BacklogSection({ projectId, todos, onOpenTodo }: BacklogSectionProps) {
     return (
         <section
         aria-labelledby="backlog-heading"
@@ -40,14 +42,15 @@ export function BacklogSection({ todos, onOpenTodo }: BacklogSectionProps) {
             </ul>
         )}
 
-        {/* Step 4: <QuickCreate /> goes here, below the list (it must render even when the list is empty). */}
+        {/* Always rendered, even with an empty list: the empty-state button above focuses this field. */}
+        <QuickCreate projectId={projectId} />
         </section>
     )
 }
 
 export function BacklogSectionSkeleton() {
     return (
-        <div aria-busy="true" className="overflow-hidden rounded-lg border bg-card">
+    <div aria-busy="true" className="overflow-hidden rounded-lg border bg-card">
         <span className="sr-only">Loading backlog…</span>
         <div className="border-b bg-muted px-4 py-3">
             <Skeleton className="h-4 w-40 bg-border" />

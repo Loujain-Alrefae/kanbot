@@ -13,32 +13,35 @@ import { BacklogSection, BacklogSectionSkeleton } from "../components/BacklogSec
 export function BacklogPage() {
     const { projectId } = useParams()
 
-    // Three independent queries: they all start together (no waterfall, NFR-6).
+  // Three independent queries: they all start together (no waterfall, NFR-6).
     const allTodos = useAllTodos(projectId)
     const backlog = useBacklogTodos(projectId, {})
     const sprints = useSprints(projectId)
 
-    // Header totals = backlog + planned sprints (the wireframe's 18 todos · 42 pts).
-    // Active and completed sprints are not "planning work".
+  // Header totals = backlog + planned sprints (the wireframe's 18 todos · 42 pts).
+  // Active and completed sprints are not "planning work".
     const planningTodos = useMemo(() => {
         if (!allTodos.data || !sprints.data) return null
         const plannedIds = new Set(sprints.data.filter((s) => s.status === "planned").map((s) => s.id))
         return allTodos.data.filter((t) => t.sprintId === null || plannedIds.has(t.sprintId))
     }, [allTodos.data, sprints.data])
 
+  // The route always has :projectId; this only narrows the type. It stays AFTER every hook (rules of hooks).
+    if (!projectId) return null
+
   // TODO (Step 6): open TodoDetailsDialog instead of this temporary toast.
     function handleOpenTodo(todo: Todo) {
         toast.info(`Details for ${todo.key} arrive in Step 6`)
     }
 
-    // Order matters: check the error BEFORE the data, so stale cached data is never shown after a failure.
+  // Order matters: check the error BEFORE the data, so stale cached data is never shown after a failure.
     let content: ReactNode
     if (backlog.isPending) {
         content = <BacklogSectionSkeleton />
     } else if (backlog.isError) {
         content = <ErrorState message={backlog.error.message} onRetry={() => backlog.refetch()} />
     } else {
-        content = <BacklogSection todos={backlog.data} onOpenTodo={handleOpenTodo} />
+        content = <BacklogSection projectId={projectId} todos={backlog.data} onOpenTodo={handleOpenTodo} />
     }
 
     return (
