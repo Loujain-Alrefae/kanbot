@@ -55,12 +55,13 @@ function BacklogView({ projectId }: { projectId: string }) {
     // Sprints a todo can be moved into (BL-7): planned and active. A completed sprint would answer 409.
     const moveTargets = useMemo(() => (sprints.data ?? []).filter((s) => s.status !== "completed"), [sprints.data])
 
-    // Header totals = backlog + planned sprints (the wireframe's 18 todos · 42 pts), never filtered.
+    // Header totals = backlog + planned sprints, never filtered. Hidden while any of the data behind them failed,
+    // so a stale cached number never sits next to an error.
     const planningTodos = useMemo(() => {
-        if (!allTodos.data || !sprints.data) return null
-        const plannedIds = new Set(plannedSprints.map((s) => s.id))
-        return allTodos.data.filter((t) => t.sprintId === null || plannedIds.has(t.sprintId))
-    }, [allTodos.data, sprints.data, plannedSprints])
+    if (allTodos.isError || sprints.isError || !allTodos.data || !sprints.data) return null
+    const plannedIds = new Set(plannedSprints.map((s) => s.id))
+    return allTodos.data.filter((t) => t.sprintId === null || plannedIds.has(t.sprintId))
+    }, [allTodos.data, allTodos.isError, sprints.data, sprints.isError, plannedSprints])
 
     // Todos grouped by sprint, in board order (status column, then `order`).
     const todosBySprint = useMemo(() => {
@@ -81,6 +82,13 @@ function BacklogView({ projectId }: { projectId: string }) {
         setFilters((current) => ({ ...current, ...patch }))
     }
 
+    // One retry for everything the page loads.
+    function retryAll() {
+    void backlog.refetch()
+    void sprints.refetch()
+    void allTodos.refetch()
+    }
+
     function handleOpenTodo(todo: Todo) {
         setSelectedTodoId(todo.id)
     }
@@ -90,7 +98,7 @@ function BacklogView({ projectId }: { projectId: string }) {
     if (backlog.isPending) {
         content = <BacklogSectionSkeleton />
     } else if (backlog.isError) {
-        content = <ErrorState message={backlog.error.message} onRetry={() => backlog.refetch()} />
+        content = <ErrorState message={backlog.error.message} onRetry={() => retryAll()} />
     } else {
         content = (
         <BacklogSection
@@ -104,11 +112,12 @@ function BacklogView({ projectId }: { projectId: string }) {
         )
     }
 
-    // Planned-sprint sections sit above the backlog. Nothing is shown while they load (most projects have none),
-    // and a failure here must not hide the backlog below, so it gets its own ErrorState.
     let sprintSections: ReactNode = null
     const sprintsError = sprints.error ?? allTodos.error
     if (sprintsError) {
+    // If the backlog failed too, the single ErrorState below already says it (the server is probably down),
+    // and its "Try again" reloads everything. A second box would only repeat the same message.
+    if (!backlog.isError) {
         sprintSections = (
         <ErrorState
             message={sprintsError.message}
@@ -117,7 +126,7 @@ function BacklogView({ projectId }: { projectId: string }) {
             void allTodos.refetch()
             }}
         />
-        )
+    )}
     } else if (sprints.data && allTodos.data) {
         sprintSections = plannedSprints.map((sprint) => (
         <SprintSection

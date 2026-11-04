@@ -1,4 +1,4 @@
-import { addDays, format, parseISO } from "date-fns"
+import { addDays, differenceInCalendarDays, format, parseISO } from "date-fns"
 
 /* parseISO reads "YYYY-MM-DD" as a LOCAL date (new Date("2026-11-03") would be UTC and can shift a day). */
 function formatOne(value: string): string {
@@ -31,4 +31,15 @@ export function todayISO(): string {
 
 export function addDaysISO(value: string, days: number): string {
     return toISODate(addDays(parseISO(value), days))
+}
+
+/* "6 days left", "1 day left", "Ends today", "Overdue by 2 days". Counts calendar days, so the time of day never matters. */
+export function daysLeftLabel(endDate: string | null): string {
+    if (!endDate) return "No end date"
+    const days = differenceInCalendarDays(parseISO(endDate), new Date())
+    if (days > 1) return `${days} days left`
+    if (days === 1) return "1 day left"
+    if (days === 0) return "Ends today"
+    const late = Math.abs(days)
+    return `Overdue by ${late} ${late === 1 ? "day" : "days"}`
 }

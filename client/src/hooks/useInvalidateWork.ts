@@ -12,6 +12,6 @@ export function useInvalidateWork() {
       queryClient.invalidateQueries({ queryKey: ["sprints"] }), // sprint list and its numbers
       queryClient.invalidateQueries({ queryKey: ["project"] }), // single project (backlog counter)
       queryClient.invalidateQueries({ queryKey: ["projects"] }), // projects page counters
-      // TODO (Day 4): queryClient.invalidateQueries({ queryKey: ["board"] })
-    ])
+    ]
+  )
 }
