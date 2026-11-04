@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { todosApi } from "@/api/todos"
-import type {CreateTodoRequest, MoveTodoRequest, Todo, TodoPriority, TodoType, UpdateTodoRequest} from "@/types/api"
+import type {CreateTodoRequest, MoveTodoRequest, SprintBoardResponse, Todo, TodoPriority, TodoType, UpdateTodoRequest} from "@/types/api"
 import { useInvalidateWork } from "./useInvalidateWork"
+import { TODO_STATUSES} from "@/types/api"
 
 export interface BacklogFilters {
     search?: string
@@ -38,15 +39,27 @@ export function useBacklogTodos(projectId: string | undefined, filters: BacklogF
     })
 }
 
-/* Single todo for the details dialog. Starts from the cached list (instant open), then refetches. */
+/* Single todo for the details dialog. Starts from a cached copy (the backlog lists or any cached board),
+   so it opens instantly, then refetches. */
 export function useTodo(id: string | null, projectId: string | undefined) {
     const queryClient = useQueryClient()
     return useQuery({
         queryKey: todoKeys.detail(id),
         queryFn: ({ signal }) => todosApi.get(id as string, signal),
         enabled: Boolean(id),
-        initialData: () =>
-        projectId ? queryClient.getQueryData<Todo[]>(todoKeys.all(projectId))?.find((t) => t.id === id) : undefined,
+        initialData: () => {
+        if (!projectId) return undefined
+
+        const fromList = queryClient.getQueryData<Todo[]>(todoKeys.all(projectId))?.find((t) => t.id === id)
+        if (fromList) return fromList
+
+        // The board keys all start with ["sprints", "board"]; the sprint list key ["sprints", projectId] does not match.
+        for (const [, board] of queryClient.getQueriesData<SprintBoardResponse>({ queryKey: ["sprints", "board"] })) {
+            const found = board ? TODO_STATUSES.flatMap((status) => board.columns[status]).find((t) => t.id === id) : undefined
+            if (found) return found
+        }
+        return undefined
+        },
     })
 }
 
