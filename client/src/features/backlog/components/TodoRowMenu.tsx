@@ -3,19 +3,29 @@ import { MoreHorizontal } from "lucide-react"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ConfirmDialog"
 import { buttonVariants } from "@/components/ui/button"
-import {DropdownMenu, DropdownMenuContent,DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { useDeleteTodo, useMoveTodo } from "@/hooks/useTodos"
+import { END_OF_LIST } from "@/lib/todo"
 import { cn } from "@/lib/utils"
 import type { Sprint, Todo } from "@/types/api"
-import { END_OF_LIST } from "@/lib/todo"
 
 interface TodoRowMenuProps {
     todo: Todo
     /** Sprints a todo can move into: planned and active (a completed sprint rejects moves with a 409). */
     moveTargets: Sprint[]
+    /** Backlog rows only: where the row is. Without it, "Move to top/bottom" is never disabled (a filtered list can't tell). */
+    listPosition?: { index: number; count: number } | null
+    /** Backlog rows only: when given, the menu shows "Move to top" and "Move to bottom" (the non-drag way to reorder). */
+    onMoveToEdge?: (todo: Todo, edge: "top" | "bottom") => void
 }
 
-export function TodoRowMenu({ todo, moveTargets }: TodoRowMenuProps) {
+export function TodoRowMenu({ todo, moveTargets, listPosition, onMoveToEdge }: TodoRowMenuProps) {
     const [confirmDelete, setConfirmDelete] = useState(false)
     const moveTodo = useMoveTodo()
     const deleteTodo = useDeleteTodo()
@@ -43,6 +53,21 @@ export function TodoRowMenu({ todo, moveTargets }: TodoRowMenuProps) {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="min-w-52">
+            {onMoveToEdge && (
+                <>
+                <DropdownMenuItem disabled={listPosition?.index === 0} onClick={() => onMoveToEdge(todo, "top")}>
+                    Move to top
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                    disabled={listPosition ? listPosition.index === listPosition.count - 1 : false}
+                    onClick={() => onMoveToEdge(todo, "bottom")}
+                >
+                    Move to bottom
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                </>
+            )}
+
             {targets.map((sprint) => {
                 const label = sprint.status === "active" ? `${sprint.name} (active)` : sprint.name
                 return (

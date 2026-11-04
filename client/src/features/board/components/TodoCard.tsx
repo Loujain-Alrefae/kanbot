@@ -32,7 +32,7 @@ export function TodoCard({ todo, onOpen, onMove }: TodoCardProps) {
         className={cn(
             "relative cursor-grab rounded-lg border bg-card p-3 text-card-foreground shadow-xs transition-colors hover:bg-accent focus-within:bg-accent motion-reduce:transition-none!",
             // While it is being dragged the real card stays in the column as a dashed placeholder (the overlay is the moving copy).
-            isDragging && "border-dashed bg-transparent shadow-none hover:bg-transparent focus-within:bg-transparent [&>*]:invisible",
+            isDragging && "border-dashed bg-transparent shadow-none hover:bg-transparent focus-within:bg-transparent *:invisible",
         )}
         >
         <div className="mb-1 flex min-h-7 items-center justify-between gap-2">
@@ -45,7 +45,7 @@ export function TodoCard({ todo, onOpen, onMove }: TodoCardProps) {
         <button
             type="button"
             onClick={() => onOpen(todo)}
-            className="block w-full text-left text-sm font-medium break-words outline-none after:absolute after:inset-0 after:rounded-lg focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring"
+            className="block w-full text-left text-sm font-medium wrap-break-word outline-none after:absolute after:inset-0 after:rounded-lg focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring"
         >
             {todo.title}
         </button>
