@@ -8,6 +8,7 @@ import { BacklogPage } from "@/features/backlog/pages/BacklogPage"
 import { BoardPage } from "@/features/board/pages/BoardPage"
 import { SprintsPage } from "@/features/sprints/pages/SprintsPage"
 import { ProjectRoute } from "@/features/projects/components/ProjectRoute"
+import { NotFoundPage } from "@/features/errors/pages/NotFoundPage"
 
 export const router = createBrowserRouter([
   {
@@ -39,5 +40,5 @@ export const router = createBrowserRouter([
     ],
   },
   { path: "/", element: <Navigate to="/projects" replace /> },
-  { path: "*", element: <div className="p-6">Page not found</div> },
-])
+  { path: "*", element: <NotFoundPage /> },]
+)

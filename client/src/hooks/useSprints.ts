@@ -97,3 +97,5 @@ export function useCompleteSprint() {
         onSuccess: () => invalidate(),
     })
 }
+
+export const COMPLETE_SPRINT_KEY = ["complete-sprint"] as const

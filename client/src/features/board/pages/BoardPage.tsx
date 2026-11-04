@@ -10,6 +10,10 @@ import { useActiveSprint, useSprintBoard } from "@/hooks/useSprints"
 import type { Todo } from "@/types/api"
 import { BoardSkeleton } from "../components/BoardSkeleton"
 import { SprintBoard } from "../components/SprintBoard"
+import {useIsMutating} from "@tanstack/react-query"
+import {COMPLETE_SPRINT_KEY} from "@/hooks/useSprints"
+
+
 
 export function BoardPage() {
   const { projectId } = useParams()
@@ -21,7 +25,7 @@ export function BoardPage() {
 
 function BoardView({ projectId }: { projectId: string }) {
   const [selectedTodoId, setSelectedTodoId] = useState<string | null>(null)
-
+  const completing = useIsMutating({ mutationKey: COMPLETE_SPRINT_KEY }) > 0
   // The board needs the active sprint's id first, so this is one unavoidable hop (the sprint list is usually
   // already cached from the backlog page, which makes it instant).
   const active = useActiveSprint(projectId)
@@ -38,17 +42,19 @@ function BoardView({ projectId }: { projectId: string }) {
   } else if (active.isError) {
     content = <ErrorState message={active.error.message} onRetry={() => active.refetch()} />
   } else if (active.data === null) {
-    content = (
-      <EmptyState
-        title="No active sprint"
-        description="Plan a sprint in the backlog and start it to see your board here."
-        action={
-          <Link to={`/projects/${projectId}/backlog`} className={buttonVariants()}>
-            Go to backlog
-          </Link>
-        }
-      />
-    )
+    content = completing ? (
+    <BoardSkeleton />
+  ) : (
+    <EmptyState
+      title="No active sprint"
+      description="Plan a sprint in the backlog and start it to see your board here."
+      action={
+        <Link to={`/projects/${projectId}/backlog`} className={buttonVariants()}>
+          Go to backlog
+        </Link>
+      }
+    />
+  )
   } else if (board.isPending) {
     content = <BoardSkeleton />
   } else if (board.isError) {
