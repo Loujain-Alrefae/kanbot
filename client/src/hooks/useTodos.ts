@@ -4,6 +4,7 @@ import { todosApi } from "@/api/todos"
 import type {CreateTodoRequest, MoveTodoRequest, SprintBoardResponse, Todo, TodoPriority, TodoType, UpdateTodoRequest} from "@/types/api"
 import { useInvalidateWork } from "./useInvalidateWork"
 import { TODO_STATUSES} from "@/types/api"
+import { MOVE_MUTATION_KEY, MOVE_SCOPE } from "./useOptimisticMove"
 
 export interface BacklogFilters {
     search?: string
@@ -104,6 +105,8 @@ export function useDeleteTodo() {
 export function useMoveTodo() {
     const invalidate = useInvalidateWork()
     return useMutation({
+        mutationKey: MOVE_MUTATION_KEY,
+        scope: MOVE_SCOPE,
         mutationFn: ({ id, body }: { id: string; body: MoveTodoRequest }) => todosApi.move(id, body),
         onSuccess: () => invalidate(),
         onError: (err) => toast.error(err.message),

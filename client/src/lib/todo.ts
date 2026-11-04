@@ -37,3 +37,5 @@ export function summarizeTodos(todos: { storyPoints: StoryPoints | null }[]): st
     const count = todos.length
     return `${count} ${count === 1 ? "todo" : "todos"} · ${sumPoints(todos)} pts`
 }
+
+export const END_OF_LIST = 10000

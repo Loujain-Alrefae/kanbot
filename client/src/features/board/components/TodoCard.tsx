@@ -1,24 +1,28 @@
 import { PointsPill } from "@/features/todos/components/PointsPill"
 import { PriorityBadge } from "@/features/todos/components/PriorityBadge"
 import { TypeIcon } from "@/features/todos/components/TypeIcon"
-import type { Todo } from "@/types/api"
+import type { Todo, TodoStatus } from "@/types/api"
+import { TodoCardMenu } from "./TodoCardMenu"
 
 interface TodoCardProps {
     todo: Todo
     onOpen: (todo: Todo) => void
+    onMove: (todo: Todo, status: TodoStatus) => void
 }
 
 /*
  * Same technique as the backlog row: the title is the only focusable control and its ::after stretches over
- * the whole card, so a click anywhere opens the todo. The card menu (Step 3) must be a SIBLING of that
- * button with `relative z-10`, never a child of it (nested interactive elements are invalid HTML).
-*/
-export function TodoCard({ todo, onOpen }: TodoCardProps) {
+ * the whole card, so a click anywhere opens the todo. The menu is a SIBLING of that button with
+ * `relative z-10`, so it sits above the stretched area and its clicks never open the details.
+ */
+export function TodoCard({ todo, onOpen, onMove }: TodoCardProps) {
     return (
         <li className="relative rounded-lg border bg-card p-3 text-card-foreground shadow-xs transition-colors hover:bg-accent focus-within:bg-accent">
         <div className="mb-1 flex min-h-7 items-center justify-between gap-2">
             <span className="text-xs tabular-nums text-muted-foreground">{todo.key}</span>
-            {/* Step 3: <TodoCardMenu /> goes here (a sibling of the title button, with `relative z-10`). */}
+            <div className="relative z-10">
+            <TodoCardMenu todo={todo} onMove={onMove} />
+            </div>
         </div>
 
         <button

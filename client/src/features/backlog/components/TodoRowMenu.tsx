@@ -7,9 +7,7 @@ import {DropdownMenu, DropdownMenuContent,DropdownMenuItem, DropdownMenuSeparato
 import { useDeleteTodo, useMoveTodo } from "@/hooks/useTodos"
 import { cn } from "@/lib/utils"
 import type { Sprint, Todo } from "@/types/api"
-
-// A huge position puts the todo at the END of the target list: the server clamps it to the list length.
-const END_OF_LIST = 10000
+import { END_OF_LIST } from "@/lib/todo"
 
 interface TodoRowMenuProps {
     todo: Todo

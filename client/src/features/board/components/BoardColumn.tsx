@@ -6,9 +6,10 @@ interface BoardColumnProps {
     status: TodoStatus
     todos: Todo[]
     onOpenTodo: (todo: Todo) => void
+    onMoveTodo: (todo: Todo, status: TodoStatus) => void
 }
 
-export function BoardColumn({ status, todos, onOpenTodo }: BoardColumnProps) {
+export function BoardColumn({ status, todos, onOpenTodo, onMoveTodo }: BoardColumnProps) {
     const headingId = `column-${status}-heading`
 
     return (
@@ -30,7 +31,7 @@ export function BoardColumn({ status, todos, onOpenTodo }: BoardColumnProps) {
         ) : (
             <ul className="space-y-2">
             {todos.map((todo) => (
-                <TodoCard key={todo.id} todo={todo} onOpen={onOpenTodo} />
+                <TodoCard key={todo.id} todo={todo} onOpen={onOpenTodo} onMove={onMoveTodo} />
             ))}
             </ul>
         )}
