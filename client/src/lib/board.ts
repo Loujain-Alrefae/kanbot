@@ -86,3 +86,16 @@ export interface BoardTotals {
         donePoints: sumPoints(columns.done),
     }
 }
+
+/*
+ * Same idea as moveInColumns, for ONE list (the backlog). `toIndex` is the index after the todo has been taken
+ * out (0 = top, a huge number = the end). Pure. An unknown todo returns the same array.
+ */
+export function moveInList(todos: Todo[], todoId: string, toIndex: number): Todo[] {
+  const moving = todos.find((todo) => todo.id === todoId)
+  if (!moving) return todos
+
+  const rest = todos.filter((todo) => todo.id !== todoId)
+  const index = Math.min(Math.max(toIndex, 0), rest.length)
+  return renumber([...rest.slice(0, index), moving, ...rest.slice(index)])
+}
