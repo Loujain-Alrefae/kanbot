@@ -31,7 +31,7 @@ export const router = createBrowserRouter([
               { index: true, element: <Navigate to="backlog" replace /> },
               { path: "backlog", element: <BacklogPage /> },
               { path: "board", element: <BoardPage /> },
-              { path: "sprints", element: <SprintsPage /> },
+              { path: "sprints/:sprintId?", element: <SprintsPage /> },
             ],
           },
         ],

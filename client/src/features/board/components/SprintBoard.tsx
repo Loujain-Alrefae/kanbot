@@ -1,5 +1,8 @@
+import { useState } from "react"
 import { DndContext, DragOverlay } from "@dnd-kit/core"
 import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
+import { CompleteSprintDialog } from "@/features/sprints/components/CompleteSprintDialog"
 import { END_OF_LIST, STATUS_LABELS } from "@/lib/todo"
 import { boardTotals } from "@/lib/board"
 import { TODO_STATUSES } from "@/types/api"
@@ -16,6 +19,8 @@ interface SprintBoardProps {
 }
 
 export function SprintBoard({ board, onOpenTodo }: SprintBoardProps) {
+    const [completing, setCompleting] = useState(false)
+
     // One mutation for the whole board: the card menu and drag and drop both use it.
     const moveTodo = useBoardMove(board.sprint.id)
 
@@ -41,7 +46,11 @@ export function SprintBoard({ board, onOpenTodo }: SprintBoardProps) {
     return (
         <>
         {/* Progress follows the cache (board.columns), not the drag copy: it must not change until the card is dropped. */}
-        <SprintHeader sprint={board.sprint} totals={boardTotals(board.columns)} />
+        <SprintHeader
+            sprint={board.sprint}
+            totals={boardTotals(board.columns)}
+            actions={<Button onClick={() => setCompleting(true)}>Complete sprint</Button>}
+        />
 
         <DndContext {...dnd.contextProps}>
             {/* Scrollable region: below ~1024px the four columns scroll sideways (NFR-4). It is focusable so
@@ -65,6 +74,10 @@ export function SprintBoard({ board, onOpenTodo }: SprintBoardProps) {
 
             <DragOverlay>{dnd.activeTodo ? <TodoCardPreview todo={dnd.activeTodo} /> : null}</DragOverlay>
         </DndContext>
+
+        {completing && (
+            <CompleteSprintDialog sprint={board.sprint} columns={board.columns} onClose={() => setCompleting(false)} />
+        )}
         </>
     )
 }
