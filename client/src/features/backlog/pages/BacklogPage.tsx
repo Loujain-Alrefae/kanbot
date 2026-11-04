@@ -1,7 +1,6 @@
 import { useMemo, useState } from "react"
 import type { ReactNode } from "react"
 import { useParams } from "react-router"
-import { toast } from "sonner"
 import { ErrorState } from "@/components/ErrorState"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { SprintDialog } from "@/features/sprints/components/SprintDialog"
@@ -18,6 +17,7 @@ import { BacklogToolbar } from "../components/BacklogToolbar"
 import { SprintSection } from "../components/SprintSection"
 import { EMPTY_FILTERS, hasActiveFilters, toApiFilters } from "../filters"
 import type { FilterState } from "../filters"
+import { StartSprintDialog } from "@/features/sprints/components/StartSprintDialog"
 
 export function BacklogPage() {
     const { projectId } = useParams()
@@ -32,6 +32,7 @@ function BacklogView({ projectId }: { projectId: string }) {
     const [selectedTodoId, setSelectedTodoId] = useState<string | null>(null)
     // { sprint: null } = creating, { sprint } = editing, null = closed.
     const [sprintDialog, setSprintDialog] = useState<{ sprint: Sprint | null } | null>(null)
+    const [startingSprint, setStartingSprint] = useState<Sprint | null>(null)
 
     // The input updates instantly; the request only follows 300ms after the last keystroke (NFR-6).
     const debouncedSearch = useDebouncedValue(filters.search, 300)
@@ -84,11 +85,6 @@ function BacklogView({ projectId }: { projectId: string }) {
         setSelectedTodoId(todo.id)
     }
 
-    // TODO (Step 9): open StartSprintDialog instead of this temporary toast.
-    function handleStartSprint(sprint: Sprint) {
-        toast.info(`Starting ${sprint.name} arrives in Step 9`)
-    }
-
     // Order matters: check the error BEFORE the data, so stale cached data is never shown after a failure.
     let content: ReactNode
     if (backlog.isPending) {
@@ -132,7 +128,7 @@ function BacklogView({ projectId }: { projectId: string }) {
             activeSprint={activeSprint}
             onOpenTodo={handleOpenTodo}
             onEdit={(target) => setSprintDialog({ sprint: target })}
-            onStart={handleStartSprint}
+            onStart={setStartingSprint}
         />
         ))
     }
@@ -166,6 +162,14 @@ function BacklogView({ projectId }: { projectId: string }) {
         {sprintDialog && (
             <SprintDialog projectId={projectId} sprint={sprintDialog.sprint} onClose={() => setSprintDialog(null)} />
         )}
+        {startingSprint && (
+            <StartSprintDialog
+                projectId={projectId}
+                sprint={startingSprint}
+                activeSprint={activeSprint}
+                onClose={() => setStartingSprint(null)}
+            />
+            )}
         </>
     )
 }
