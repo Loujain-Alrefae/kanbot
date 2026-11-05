@@ -6,6 +6,7 @@ import { TypeIcon } from "@/features/todos/components/TypeIcon"
 import { cn } from "@/lib/utils"
 import type { Sprint, Todo } from "@/types/api"
 import { TodoRowMenu } from "./TodoRowMenu"
+import { DueDateBadge } from "@/features/todos/components/DueDateBadge"
 
 interface TodoRowProps {
   todo: Todo
@@ -62,6 +63,7 @@ export function TodoRow({
             {todo.title}
             </button>
             <LabelChips labels={todo.labels} max={2} className="shrink-0" />
+            <DueDateBadge todo={todo} className="shrink-0" />
         </div>
 
         <div className="w-20 shrink-0">

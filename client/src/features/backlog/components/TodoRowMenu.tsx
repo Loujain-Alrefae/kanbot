@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useQueryClient } from "@tanstack/react-query"
 import { MoreHorizontal } from "lucide-react"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ConfirmDialog"
@@ -10,7 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useDeleteTodo, useMoveTodo } from "@/hooks/useTodos"
+import { positionInList, useAnnounceMove } from "@/hooks/useAnnounceMove"
+import { todoKeys, useDeleteTodo, useMoveTodo } from "@/hooks/useTodos"
 import { END_OF_LIST } from "@/lib/todo"
 import { cn } from "@/lib/utils"
 import type { Sprint, Todo } from "@/types/api"
@@ -27,17 +29,31 @@ interface TodoRowMenuProps {
 
 export function TodoRowMenu({ todo, moveTargets, listPosition, onMoveToEdge }: TodoRowMenuProps) {
     const [confirmDelete, setConfirmDelete] = useState(false)
+    const queryClient = useQueryClient()
     const moveTodo = useMoveTodo()
     const deleteTodo = useDeleteTodo()
+    const announceMove = useAnnounceMove()
 
     const inSprint = todo.sprintId !== null
     const targets = moveTargets.filter((sprint) => sprint.id !== todo.sprintId)
 
     function moveTo(sprintId: string | null, destination: string) {
+        // Where the row is NOW, read before the move: Undo needs it. The backlog's own index is the most exact;
+        // otherwise it comes from the project's unfiltered list. null = unknown, so no Undo is offered.
+        const position =
+        listPosition?.index ?? positionInList(queryClient.getQueryData<Todo[]>(todoKeys.all(todo.projectId)), todo)
+        const origin = position === null ? null : { sprintId: todo.sprintId, status: todo.status, position }
+
         // Failure toast comes from useMoveTodo; here we only announce the success.
         moveTodo.mutate(
         { id: todo.id, body: { sprintId, position: END_OF_LIST } },
-        { onSuccess: () => toast.success(`${todo.key} moved to ${destination}`) },
+        {
+            onSuccess: () => {
+            const message = `${todo.key} moved to ${destination}`
+            if (origin) announceMove(todo, origin, message)
+            else toast.success(message)
+            },
+        },
         )
     }
 

@@ -1,10 +1,10 @@
 import { useState } from "react"
 import { DndContext, DragOverlay } from "@dnd-kit/core"
-import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { CompleteSprintDialog } from "@/features/sprints/components/CompleteSprintDialog"
+import { useAnnounceMove } from "@/hooks/useAnnounceMove"
+import { boardTotals, locateInColumns } from "@/lib/board"
 import { END_OF_LIST, STATUS_LABELS } from "@/lib/todo"
-import { boardTotals } from "@/lib/board"
 import { TODO_STATUSES } from "@/types/api"
 import type { SprintBoardResponse, Todo, TodoStatus } from "@/types/api"
 import { useBoardDnd } from "../hooks/useBoardDnd"
@@ -23,20 +23,29 @@ export function SprintBoard({ board, onOpenTodo }: SprintBoardProps) {
 
     // One mutation for the whole board: the card menu and drag and drop both use it.
     const moveTodo = useBoardMove(board.sprint.id)
+    const announceMove = useAnnounceMove()
 
-    // Every real move ends here. A toast only when the status changed: a reorder inside a column is visible by itself.
+    // Every real move ends here. The toast always carries Undo, which puts the card back where it was.
     function commitMove(todo: Todo, status: TodoStatus, position: number) {
-        moveTodo.mutate(
+        // Read from the cache BEFORE the optimistic update changes it.
+        const from = locateInColumns(board.columns, todo.id)
+
+    moveTodo.mutate(
         { id: todo.id, body: { status, position } },
         {
             onSuccess: () => {
-            if (todo.status !== status) toast.success(`${todo.key} moved to ${STATUS_LABELS[status]}`)
+            if (!from) return
+            const message =
+                todo.status !== status
+                ? `${todo.key} moved to ${STATUS_LABELS[status]}`
+                : `${todo.key} reordered`
+            announceMove(todo, { status: from.status, position: from.index }, message)
             },
         },
         )
     }
 
-    // From the card menu: the card goes to the END of the target column, like a status change in the details dialog.
+  // From the card menu: the card goes to the END of the target column, like a status change in the details dialog.
     function handleMenuMove(todo: Todo, status: TodoStatus) {
         if (todo.status !== status) commitMove(todo, status, END_OF_LIST)
     }
@@ -53,13 +62,11 @@ export function SprintBoard({ board, onOpenTodo }: SprintBoardProps) {
         />
 
         <DndContext {...dnd.contextProps}>
-            {/* Scrollable region: below ~1024px the four columns scroll sideways (NFR-4). It is focusable so
-                keyboard users can scroll it with the arrow keys. */}
             <div
             role="region"
             aria-label="Sprint board"
             tabIndex={0}
-            className="relative grid auto-cols-[minmax(16rem,1fr)] grid-flow-col gap-4 overflow-x-auto pb-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="grid auto-cols-[minmax(16rem,1fr)] grid-flow-col gap-4 overflow-x-auto pb-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
             {TODO_STATUSES.map((status) => (
                 <BoardColumn

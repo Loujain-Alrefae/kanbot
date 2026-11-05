@@ -6,6 +6,7 @@ import { TypeIcon } from "@/features/todos/components/TypeIcon"
 import { cn } from "@/lib/utils"
 import type { Todo, TodoStatus } from "@/types/api"
 import { TodoCardMenu } from "./TodoCardMenu"
+import { DueDateBadge } from "@/features/todos/components/DueDateBadge"
 
 interface TodoCardProps {
     todo: Todo
@@ -53,6 +54,7 @@ export function TodoCard({ todo, onOpen, onMove }: TodoCardProps) {
         <div className="mt-3 flex flex-wrap items-center gap-2">
             <TypeIcon type={todo.type} />
             <PriorityBadge priority={todo.priority} />
+            <DueDateBadge todo={todo} />
             <PointsPill points={todo.storyPoints} className="ml-auto" />
         </div>
         </li>
