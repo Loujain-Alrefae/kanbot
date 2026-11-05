@@ -18,6 +18,9 @@ import type { Todo } from "@/types/api"
 import { TodoDetailsForm } from "./todoDetails"
 import { BACKLOG_VALUE, buildPatch, isFormField, toFormValues, todoFormSchema } from "./todoDetails/config"
 import type { TodoFormValues } from "./todoDetails/config"
+import { AiButton } from "@/features/ai/components/AiButton"
+import { buildImprovePrompt } from "@/features/ai/lib/prompts"
+import { useAiUiStore } from "@/store/ai-ui.store"
 
 interface TodoDetailsDialogProps {
   projectId: string
@@ -99,6 +102,14 @@ function LoadedTodoDialog({ todo, projectId, onClose }: LoadedTodoDialogProps) {
   const [confirmDelete, setConfirmDelete] = useState(false)
   const busy = updateTodo.isPending || deleteTodo.isPending
 
+  const askAi = useAiUiStore((s) => s.askAi)
+  // Close first (the drawer is modal too), then hand the todo to the assistant. It sends the SAVED version,
+  // which is why the button waits while there are unsaved changes.
+  function handleImprove() {
+    onClose()
+    askAi(buildImprovePrompt(todo))
+  }
+
   // Sprint choices: Backlog + planned + active. A todo that sits in a completed sprint can't be moved (409).
   const currentSprint = sprints.data?.find((sprint) => sprint.id === todo.sprintId)
   const locked = currentSprint?.status === "completed"
@@ -163,7 +174,7 @@ function LoadedTodoDialog({ todo, projectId, onClose }: LoadedTodoDialogProps) {
             {TYPE_LABELS[todo.type]} · created {formatDate(todo.createdAt)}
           </DialogDescription>
         </DialogHeader>
-        
+
 
         <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
           <TodoDetailsForm
@@ -177,9 +188,18 @@ function LoadedTodoDialog({ todo, projectId, onClose }: LoadedTodoDialogProps) {
         </div>
 
         <div className="flex items-center justify-between gap-3 border-t px-6 py-4">
-          <Button type="button" variant="destructive" onClick={() => setConfirmDelete(true)} disabled={busy}>
-            Delete
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button type="button" variant="destructive" onClick={() => setConfirmDelete(true)} disabled={busy}>
+              Delete
+            </Button>
+            <AiButton
+              onClick={handleImprove}
+              disabled={busy || isDirty}
+              title={isDirty ? "Save or discard your changes first" : undefined}
+            >
+              Improve with AI
+            </AiButton>
+          </div>
           <div className="flex gap-2">
             <Button type="button" variant="outline" onClick={requestClose} disabled={busy}>
               Cancel

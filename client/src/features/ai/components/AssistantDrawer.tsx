@@ -1,13 +1,13 @@
 import { MessageSquarePlus, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { useAiUiStore } from "@/store/ai-ui.store"
 import type { ChatMessage } from "@/types/api"
 import { AiBadge } from "./AiBadge"
+import { AiButton } from "./AiButton"
 import { AiDisclaimer } from "./AiDisclaimer"
 import { ChatInput } from "./ChatInput"
 import { ChatMessages } from "./ChatMessages"
-import { useAiUiStore } from "@/store/ai-ui.store"
-import { AiButton } from "./AiButton"
 
 interface AssistantDrawerProps {
     open: boolean
@@ -15,10 +15,11 @@ interface AssistantDrawerProps {
     messages: ChatMessage[]
     pending: boolean
     error: Error | null
+    hasActiveSprint: boolean
+    suggestions: string[]
     onSend: (text: string) => void
     onRetry: () => void
     onNewChat: () => void
-    hasActiveSprint: boolean
 }
 
 export function AssistantDrawer({
@@ -27,10 +28,11 @@ export function AssistantDrawer({
     messages,
     pending,
     error,
+    hasActiveSprint,
+    suggestions,
     onSend,
     onRetry,
     onNewChat,
-    hasActiveSprint
     }: AssistantDrawerProps) {
     const canReset = messages.length > 0 || error !== null
     const openGenerate = useAiUiStore((s) => s.openGenerate)
@@ -41,12 +43,10 @@ export function AssistantDrawer({
         <Sheet
         open={open}
         onOpenChange={(next) => {
-            if (!next) onClose() // X, Esc and a click outside all arrive here
+            if (!next) onClose()
         }}
         >
-        {/* The data-[side=right] variants match the ones in sheet.tsx, so they win over its default 3/4 width. */}
         <SheetContent className="gap-0 p-0 data-[side=right]:w-full data-[side=right]:sm:max-w-md">
-            {/* pr-12 leaves room for the built-in close button */}
             <SheetHeader className="shrink-0 flex-row flex-wrap items-center gap-2 border-b py-3 pr-12">
             <Sparkles className="size-4 text-primary" aria-hidden="true" />
             <SheetTitle>Kanbot Assistant</SheetTitle>
@@ -66,22 +66,35 @@ export function AssistantDrawer({
             </SheetHeader>
 
             <div className="flex shrink-0 flex-wrap gap-2 border-b px-4 py-3">
-                <AiButton size="sm" onClick={openGenerate}>
-                    Create todos
-                </AiButton>
-                <AiButton size="sm" onClick={openPlan}>
-                    Plan sprint
-                </AiButton>
-            </div>
-
+            <AiButton size="sm" onClick={openGenerate}>
+                Create todos
+            </AiButton>
+            <AiButton size="sm" onClick={openPlan}>
+                Plan sprint
+            </AiButton>
             <AiButton size="sm" onClick={openSummary} disabled={!hasActiveSprint}>
-            Summarize sprint
+                Summarize sprint
             </AiButton>
             {!hasActiveSprint && <p className="w-full text-xs text-muted-foreground">Start a sprint to summarize it.</p>}
+            </div>
 
             <ChatMessages messages={messages} pending={pending} error={error} onRetry={onRetry} />
 
             <div className="shrink-0 space-y-2 border-t p-4">
+            {suggestions.length > 0 && !pending && (
+                <div className="flex flex-wrap gap-2">
+                {suggestions.map((text) => (
+                    <button
+                    key={text}
+                    type="button"
+                    onClick={() => onSend(text)}
+                    className="rounded-full border bg-card px-3 py-1 text-left text-xs outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                    {text}
+                    </button>
+                ))}
+                </div>
+            )}
             <ChatInput busy={pending} onSend={onSend} />
             <AiDisclaimer className="text-center" />
             </div>
