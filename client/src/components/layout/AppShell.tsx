@@ -3,6 +3,7 @@ import { Outlet } from "react-router"
 import { Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet"
+import { AiHost } from "@/features/ai/components/AiHost"
 import icon from "@/assets/kanbot-icon.svg"
 import { Sidebar } from "./Sidebar"
 
@@ -36,6 +37,9 @@ export function AppShell() {
             <Sidebar onNavigate={() => setMobileOpen(false)} />
             </SheetContent>
         </Sheet>
+
+        {/* The AI drawer and dialogs live here once; any button in any page opens them through the store. */}
+        <AiHost />
         </div>
     )
 }
