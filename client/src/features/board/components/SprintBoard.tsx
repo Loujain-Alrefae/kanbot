@@ -66,7 +66,7 @@ export function SprintBoard({ board, onOpenTodo }: SprintBoardProps) {
             role="region"
             aria-label="Sprint board"
             tabIndex={0}
-            className="grid auto-cols-[minmax(16rem,1fr)] grid-flow-col gap-4 overflow-x-auto pb-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="relative grid auto-cols-[minmax(16rem,1fr)] grid-flow-col gap-4 overflow-x-auto pb-2 outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
             {TODO_STATUSES.map((status) => (
                 <BoardColumn

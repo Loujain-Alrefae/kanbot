@@ -44,7 +44,7 @@ export function TodoDetailsDialog({ projectId, todoId, onClose }: TodoDetailsDia
         if (!open) onClose()
       }}
     >
-      <DialogContent className="gap-0 p-0 sm:max-w-3xl">
+      <DialogContent className="gap-0 p-0 sm:max-w-[min(48rem,calc(100%-4rem))]">
         <DialogHeader className="border-b px-6 py-4">
           <DialogTitle>Todo details</DialogTitle>
           <DialogDescription className="sr-only">Loading the todo</DialogDescription>
@@ -154,7 +154,7 @@ function LoadedTodoDialog({ todo, projectId, onClose }: LoadedTodoDialogProps) {
         if (!open) requestClose()
       }}
     >
-      <DialogContent className="flex max-h-[90dvh] flex-col gap-0 p-0 sm:max-w-3xl">
+      <DialogContent className="flex max-h-[90dvh] flex-col gap-0 p-0 sm:max-w-[min(48rem,calc(100%-4rem))]">
         <DialogHeader className="flex-row items-center gap-3 border-b px-6 py-4 pr-12 text-left">
           <DialogTitle className="rounded bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
             {todo.key}
@@ -163,6 +163,7 @@ function LoadedTodoDialog({ todo, projectId, onClose }: LoadedTodoDialogProps) {
             {TYPE_LABELS[todo.type]} · created {formatDate(todo.createdAt)}
           </DialogDescription>
         </DialogHeader>
+        
 
         <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
           <TodoDetailsForm
