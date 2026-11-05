@@ -2,6 +2,8 @@ import axios, { type AxiosResponse } from "axios"
 import { useAuthStore } from "@/store/auth.store"
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000/api"
+const DEFAULT_TIMEOUT_MS = 30_000
+export const AI_REQUEST_TIMEOUT_MS = 75_000
 
 /* The only thing we keep on the client: the JWT (NFR-7). Never log it. */
 export const tokenStore = {
@@ -65,6 +67,14 @@ interface RequestOptions {
   signal?: AbortSignal
 }
 
+interface RequestOptions {
+  method?: string
+  body?: unknown
+  signal?: AbortSignal
+  /** Milliseconds before the request is given up. Defaults to 30 s. */
+  timeout?: number
+}
+
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const headers: Record<string, string> = { "Content-Type": "application/json" }
   const token = tokenStore.get()
@@ -79,11 +89,16 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       data: options.body !== undefined ? JSON.stringify(options.body) : undefined,
       signal: options.signal,
       transformResponse: [parseJsonOrNull],
+      timeout: options.timeout ?? DEFAULT_TIMEOUT_MS,
     })
-  } catch (e) {
-    if (axios.isCancel(e)) throw e
-    throw new ApiError(0, "NETWORK_ERROR", "Cannot reach the server. Is it running?")
-  }
+  }  catch (e) {
+      if (axios.isCancel(e)) throw e
+      // A timeout is not "the server is down": say what really happened.
+      if (axios.isAxiosError(e) && (e.code === "ECONNABORTED" || e.code === "ETIMEDOUT")) {
+        throw new ApiError(0, "TIMEOUT", "The request took too long. Please try again.")
+      }
+      throw new ApiError(0, "NETWORK_ERROR", "Cannot reach the server. Is it running?")
+    }
 
   if (res.status === 204) return undefined as T
 
@@ -98,7 +113,7 @@ if (res.status < 200 || res.status >= 300) {
         err?.details ?? [],
     )
     // A 401 on login just means wrong credentials, not an expired session.
-    if (res.status === 401 && path !== "/auth/login") {
+    if (res.status === 401 && path !== "/auth/login" && token) {
     useAuthStore.getState().clearSession()
     onUnauthorized?.()
 }
@@ -110,7 +125,8 @@ if (res.status < 200 || res.status >= 300) {
 
 export const api = {
     get: <T>(path: string, signal?: AbortSignal) => request<T>(path, { signal }),
-    post: <T>(path: string, body?: unknown) => request<T>(path, { method: "POST", body }),
+    post: <T>(path: string, body?: unknown, options?: { timeout?: number }) =>
+          request<T>(path, { method: "POST", body, timeout: options?.timeout }),
     patch: <T>(path: string, body?: unknown) => request<T>(path, { method: "PATCH", body }),
     put: <T>(path: string, body?: unknown) => request<T>(path, { method: "PUT", body }),
     delete: <T>(path: string) => request<T>(path, { method: "DELETE" }),
