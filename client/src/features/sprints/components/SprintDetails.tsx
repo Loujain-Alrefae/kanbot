@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { ErrorState } from "@/components/ErrorState"
 import { Skeleton } from "@/components/ui/skeleton"
+import { SprintSummary } from "@/features/ai/components/SprintSummary"
 import { PointsPill } from "@/features/todos/components/PointsPill"
 import { PriorityBadge } from "@/features/todos/components/PriorityBadge"
 import { TodoDetailsDialog } from "@/features/todos/components/TodoDetailsDialog"
@@ -14,19 +15,21 @@ import type { Sprint } from "@/types/api"
 import { SprintStatusBadge } from "./SprintStatusBadge"
 import { StatTile } from "./StatTile"
 
-export function SprintDetails({ sprint }: { sprint: Sprint }) {
+interface SprintDetailsProps {
+    sprint: Sprint
+    /** true right after completing a sprint with "Generate AI summary" ticked. */
+    autoSummary?: boolean
+}
+
+export function SprintDetails({ sprint, autoSummary = false }: SprintDetailsProps) {
     const [selectedTodoId, setSelectedTodoId] = useState<string | null>(null)
     const stats = displayStats(sprint)
 
-    // Works for any status: the endpoint returns the sprint's todos grouped by status.
     const board = useSprintBoard(sprint.id)
 
     const carried =
-        stats.carriedOver === null
-        ? "n/a"
-        : `${stats.carriedOver} ${stats.carriedOver === 1 ? "todo" : "todos"}`
+        stats.carriedOver === null ? "n/a" : `${stats.carriedOver} ${stats.carriedOver === 1 ? "todo" : "todos"}`
 
-    // Error first, then loading, then data: stale cached todos are never shown next to an error.
     let todosContent
     if (board.isError) {
         todosContent = <ErrorState message={board.error.message} onRetry={() => board.refetch()} />
@@ -86,6 +89,8 @@ export function SprintDetails({ sprint }: { sprint: Sprint }) {
             <StatTile label="Carried over" value={carried} />
             <StatTile label="Completion %" value={`${completionPercent(stats)}%`} />
         </dl>
+
+        <SprintSummary sprint={sprint} autoGenerate={autoSummary} />
 
         <div className="space-y-2">
             <h3 className="text-sm font-medium">Todos</h3>

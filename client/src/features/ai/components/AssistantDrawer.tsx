@@ -18,6 +18,7 @@ interface AssistantDrawerProps {
     onSend: (text: string) => void
     onRetry: () => void
     onNewChat: () => void
+    hasActiveSprint: boolean
 }
 
 export function AssistantDrawer({
@@ -29,10 +30,12 @@ export function AssistantDrawer({
     onSend,
     onRetry,
     onNewChat,
+    hasActiveSprint
     }: AssistantDrawerProps) {
     const canReset = messages.length > 0 || error !== null
     const openGenerate = useAiUiStore((s) => s.openGenerate)
     const openPlan = useAiUiStore((s) => s.openPlan)
+    const openSummary = useAiUiStore((s) => s.openSummary)
 
     return (
         <Sheet
@@ -70,6 +73,11 @@ export function AssistantDrawer({
                     Plan sprint
                 </AiButton>
             </div>
+
+            <AiButton size="sm" onClick={openSummary} disabled={!hasActiveSprint}>
+            Summarize sprint
+            </AiButton>
+            {!hasActiveSprint && <p className="w-full text-xs text-muted-foreground">Start a sprint to summarize it.</p>}
 
             <ChatMessages messages={messages} pending={pending} error={error} onRetry={onRetry} />
 

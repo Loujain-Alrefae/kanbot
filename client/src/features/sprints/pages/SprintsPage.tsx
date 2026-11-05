@@ -1,5 +1,6 @@
+import { useEffect, useState } from "react"
 import type { ReactNode } from "react"
-import { Link, useParams } from "react-router"
+import { Link, useLocation, useNavigate, useParams } from "react-router"
 import { EmptyState } from "@/components/EmptyState"
 import { ErrorState } from "@/components/ErrorState"
 import { PageHeader } from "@/components/layout/PageHeader"
@@ -9,17 +10,30 @@ import { useSprints } from "@/hooks/useSprints"
 import { SprintDetails } from "../components/SprintDetails"
 import { SprintListItem } from "../components/SprintListItem"
 
-export function SprintsPage() {
-    const { projectId } = useParams()
-    if (!projectId) return null // the route always has :projectId; this only narrows the type
+function wantsAutoSummary(state: unknown): boolean {
+    return typeof state === "object" && state !== null && "autoSummary" in state && state.autoSummary === true
+    }
 
-    // key = projectId: switching projects remounts the page and resets everything local.
+    export function SprintsPage() {
+    const { projectId } = useParams()
+    if (!projectId) return null
+
     return <SprintsView key={projectId} projectId={projectId} />
     }
 
     function SprintsView({ projectId }: { projectId: string }) {
-    const { sprintId } = useParams() // the selected sprint lives in the URL, so it survives a reload
+    const { sprintId } = useParams()
+    const location = useLocation()
+    const navigate = useNavigate()
     const sprints = useSprints(projectId)
+
+    // Read once when the page opens (the complete dialog sets it). It belongs to that sprint only.
+    const [autoSprintId] = useState(() => (wantsAutoSummary(location.state) ? sprintId : undefined))
+
+    // Clear the state right away: a reload must not generate a second summary.
+    useEffect(() => {
+        if (wantsAutoSummary(location.state)) navigate(location.pathname, { replace: true, state: null })
+    }, [location.pathname, location.state, navigate])
 
     let meta: string | undefined
     let content: ReactNode
@@ -53,7 +67,6 @@ export function SprintsPage() {
         const list = sprints.data
         meta = `${list.length} ${list.length === 1 ? "sprint" : "sprints"}`
 
-        // No id in the URL = the first sprint (the server sorts: active, planned, then completed newest first).
         const selected = sprintId ? list.find((sprint) => sprint.id === sprintId) : list[0]
 
         content = (
@@ -70,7 +83,7 @@ export function SprintsPage() {
             </nav>
 
             {selected ? (
-            <SprintDetails key={selected.id} sprint={selected} />
+            <SprintDetails key={selected.id} sprint={selected} autoSummary={selected.id === autoSprintId} />
             ) : (
             <EmptyState
                 title="Sprint not found"

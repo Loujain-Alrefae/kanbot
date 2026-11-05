@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react"
 import { useMatch } from "react-router"
 import { useChat } from "@/hooks/useAi"
+import { useActiveSprint } from "@/hooks/useSprints"
 import { useAiUiStore } from "@/store/ai-ui.store"
 import type { ChatMessage } from "@/types/api"
 import { AssistantDrawer } from "./AssistantDrawer"
 import { GenerateTodosDialog } from "./GenerateTodosDialog"
 import { PlanSprintDialog } from "./PlanSprintDialog"
+import { SprintSummaryDialog } from "./SprintSummaryDialog"
 
-/*
- * Mounted once in the app shell. useMatch reads the URL directly (like the sidebar), because useParams
- * in a parent layout can't see the child route's params. Outside a project it renders nothing.
- */
 export function AiHost() {
     const match = useMatch("/projects/:projectId/*")
     const projectId = match?.params.projectId
@@ -24,19 +22,19 @@ export function AiHost() {
     const drawerOpen = useAiUiStore((s) => s.drawerOpen)
     const generateOpen = useAiUiStore((s) => s.generateOpen)
     const planOpen = useAiUiStore((s) => s.planOpen)
+    const summaryOpen = useAiUiStore((s) => s.summaryOpen)
     const closeDrawer = useAiUiStore((s) => s.closeDrawer)
     const closeGenerate = useAiUiStore((s) => s.closeGenerate)
     const closePlan = useAiUiStore((s) => s.closePlan)
+    const closeSummary = useAiUiStore((s) => s.closeSummary)
     const closeAll = useAiUiStore((s) => s.closeAll)
 
-    // The conversation is UI state, kept here (not inside the drawer) so it survives closing the drawer.
     const [messages, setMessages] = useState<ChatMessage[]>([])
     const chat = useChat(projectId)
+    const activeSprint = useActiveSprint(projectId)
 
-    // Leaving the project (or switching) must not leave an AI surface "open" for the next one.
     useEffect(() => closeAll, [closeAll])
 
-    // The server remembers nothing: every request carries the conversation (useChat trims it to the last 30).
     function request(history: ChatMessage[]) {
         chat.mutate(history, {
         onSuccess: (response) => setMessages((current) => [...current, response.message]),
@@ -49,7 +47,6 @@ export function AiHost() {
         request(history)
     }
 
-    // The failed question is already the last message, so retrying must not add it again.
     function handleRetry() {
         request(messages)
     }
@@ -67,12 +64,14 @@ export function AiHost() {
             messages={messages}
             pending={chat.isPending}
             error={chat.error}
+            hasActiveSprint={Boolean(activeSprint.data)}
             onSend={handleSend}
             onRetry={handleRetry}
             onNewChat={handleNewChat}
         />
         {generateOpen && <GenerateTodosDialog projectId={projectId} onClose={closeGenerate} />}
         {planOpen && <PlanSprintDialog projectId={projectId} onClose={closePlan} />}
+        {summaryOpen && <SprintSummaryDialog projectId={projectId} onClose={closeSummary} />}
         </>
     )
 }
