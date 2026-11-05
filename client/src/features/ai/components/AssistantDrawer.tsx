@@ -6,6 +6,8 @@ import { AiBadge } from "./AiBadge"
 import { AiDisclaimer } from "./AiDisclaimer"
 import { ChatInput } from "./ChatInput"
 import { ChatMessages } from "./ChatMessages"
+import { useAiUiStore } from "@/store/ai-ui.store"
+import { AiButton } from "./AiButton"
 
 interface AssistantDrawerProps {
     open: boolean
@@ -29,6 +31,8 @@ export function AssistantDrawer({
     onNewChat,
     }: AssistantDrawerProps) {
     const canReset = messages.length > 0 || error !== null
+    const openGenerate = useAiUiStore((s) => s.openGenerate)
+    const openPlan = useAiUiStore((s) => s.openPlan)
 
     return (
         <Sheet
@@ -57,6 +61,15 @@ export function AssistantDrawer({
                 New chat
             </Button>
             </SheetHeader>
+
+            <div className="flex shrink-0 flex-wrap gap-2 border-b px-4 py-3">
+                <AiButton size="sm" onClick={openGenerate}>
+                    Create todos
+                </AiButton>
+                <AiButton size="sm" onClick={openPlan}>
+                    Plan sprint
+                </AiButton>
+            </div>
 
             <ChatMessages messages={messages} pending={pending} error={error} onRetry={onRetry} />
 

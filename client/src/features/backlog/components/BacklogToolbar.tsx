@@ -2,7 +2,9 @@ import { Plus, Search, X } from "lucide-react"
 import { OptionSelect } from "@/components/OptionSelect"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { AiButton } from "@/features/ai/components/AiButton"
 import { PRIORITY_OPTIONS, TYPE_OPTIONS } from "@/lib/todo"
+import { useAiUiStore } from "@/store/ai-ui.store"
 import { hasActiveFilters, parsePriorityFilter, parseTypeFilter } from "../filters"
 import type { FilterState } from "../filters"
 
@@ -17,6 +19,9 @@ interface BacklogToolbarProps {
 }
 
 export function BacklogToolbar({ filters, onChange, onClear, onCreateSprint }: BacklogToolbarProps) {
+    const openGenerate = useAiUiStore((s) => s.openGenerate)
+    const openPlan = useAiUiStore((s) => s.openPlan)
+
     return (
         <div className="flex flex-wrap items-center gap-3">
         <div role="search" aria-label="Filter backlog" className="flex flex-wrap items-center gap-3">
@@ -59,11 +64,14 @@ export function BacklogToolbar({ filters, onChange, onClear, onCreateSprint }: B
             )}
         </div>
 
-        {/* Day 6: the "Generate todos with AI" and "Plan sprint with AI" buttons go before this one. */}
-        <Button type="button" variant="outline" className="ml-auto" onClick={onCreateSprint}>
+        <div className="ml-auto flex flex-wrap items-center gap-3">
+            <AiButton onClick={openGenerate}>Generate todos with AI</AiButton>
+            <AiButton onClick={openPlan}>Plan sprint with AI</AiButton>
+            <Button type="button" variant="outline" onClick={onCreateSprint}>
             <Plus className="size-4" aria-hidden="true" />
             Create sprint
-        </Button>
+            </Button>
+        </div>
         </div>
     )
 }

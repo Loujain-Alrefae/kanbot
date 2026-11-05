@@ -4,6 +4,8 @@ import { useChat } from "@/hooks/useAi"
 import { useAiUiStore } from "@/store/ai-ui.store"
 import type { ChatMessage } from "@/types/api"
 import { AssistantDrawer } from "./AssistantDrawer"
+import { GenerateTodosDialog } from "./GenerateTodosDialog"
+import { PlanSprintDialog } from "./PlanSprintDialog"
 
 /*
  * Mounted once in the app shell. useMatch reads the URL directly (like the sidebar), because useParams
@@ -16,11 +18,15 @@ export function AiHost() {
 
     // key = projectId: switching projects remounts this, so the conversation starts empty (AI-1).
     return <AiHostView key={projectId} projectId={projectId} />
-}
+    }
 
-function AiHostView({ projectId }: { projectId: string }) {
+    function AiHostView({ projectId }: { projectId: string }) {
     const drawerOpen = useAiUiStore((s) => s.drawerOpen)
+    const generateOpen = useAiUiStore((s) => s.generateOpen)
+    const planOpen = useAiUiStore((s) => s.planOpen)
     const closeDrawer = useAiUiStore((s) => s.closeDrawer)
+    const closeGenerate = useAiUiStore((s) => s.closeGenerate)
+    const closePlan = useAiUiStore((s) => s.closePlan)
     const closeAll = useAiUiStore((s) => s.closeAll)
 
     // The conversation is UI state, kept here (not inside the drawer) so it survives closing the drawer.
@@ -54,15 +60,19 @@ function AiHostView({ projectId }: { projectId: string }) {
     }
 
     return (
+        <>
         <AssistantDrawer
-        open={drawerOpen}
-        onClose={closeDrawer}
-        messages={messages}
-        pending={chat.isPending}
-        error={chat.error}
-        onSend={handleSend}
-        onRetry={handleRetry}
-        onNewChat={handleNewChat}
+            open={drawerOpen}
+            onClose={closeDrawer}
+            messages={messages}
+            pending={chat.isPending}
+            error={chat.error}
+            onSend={handleSend}
+            onRetry={handleRetry}
+            onNewChat={handleNewChat}
         />
+        {generateOpen && <GenerateTodosDialog projectId={projectId} onClose={closeGenerate} />}
+        {planOpen && <PlanSprintDialog projectId={projectId} onClose={closePlan} />}
+        </>
     )
 }
