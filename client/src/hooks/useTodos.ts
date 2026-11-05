@@ -78,6 +78,18 @@ export function useCreateTodo(projectId: string) {
     })
 }
 
+/* No onError: the AI dialog that calls this shows the error itself. */
+export function useBulkCreateTodos(projectId: string) {
+    const invalidate = useInvalidateWork()
+    return useMutation({
+        mutationFn: (todos: CreateTodoRequest[]) => todosApi.createBulk(projectId, todos),
+        onSuccess: (created) => {
+        toast.success(`${created.length} ${created.length === 1 ? "todo" : "todos"} added to the backlog`)
+        return invalidate()
+        },
+    })
+}
+
 export function useUpdateTodo() {
     const invalidate = useInvalidateWork()
     return useMutation({

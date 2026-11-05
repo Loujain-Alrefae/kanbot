@@ -1,5 +1,5 @@
 import { api } from "./client"
-import type { CreateTodoRequest, MoveTodoRequest, Todo, TodoListQuery, TodoListResponse, UpdateTodoRequest} from "@/types/api"
+import type { BulkCreateTodosRequest, BulkCreateTodosResponse, CreateTodoRequest, MoveTodoRequest, Todo, TodoListQuery, TodoListResponse, UpdateTodoRequest} from "@/types/api"
 
 /* Builds "?a=1&b=2", skipping empty values. */
 function toQueryString(query: TodoListQuery): string {
@@ -20,6 +20,12 @@ export const todosApi = {
 
     create: (projectId: string, body: CreateTodoRequest) =>
     api.post<{ todo: Todo }>(`/projects/${projectId}/todos`, body).then((r) => r.todo),
+
+      /* Saves several todos at once (for example the AI drafts the user kept). */
+    createBulk: (projectId: string, todos: CreateTodoRequest[]) => {
+      const body: BulkCreateTodosRequest = { todos }
+      return api.post<BulkCreateTodosResponse>(`/projects/${projectId}/todos/bulk`, body).then((r) => r.todos)
+    },
 
     update: (id: string, body: UpdateTodoRequest) =>
     api.patch<unknown>(`/todos/${id}`, body).then(() => undefined),
