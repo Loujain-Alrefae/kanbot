@@ -82,8 +82,10 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
 
   let res: AxiosResponse<unknown>
   try {
+    const cleanPath = path.startsWith("/") ? path.slice(1) : path
+
     res = await http.request<unknown>({
-      url: path,
+      url: cleanPath,
       method: options.method ?? "GET",
       headers,
       data: options.body !== undefined ? JSON.stringify(options.body) : undefined,
