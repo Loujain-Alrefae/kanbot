@@ -2,9 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/client/public/kanbot-icon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kanbot</title>
+  <script>
+      (function () {
+        try {
+          var t = localStorage.getItem("kanbot-theme");
+          if (t !== "light" && t !== "dark") {
+            t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          }
+          document.documentElement.classList.toggle("dark", t === "dark");
+          document.documentElement.style.colorScheme = t;
+        } catch (e) {}
+      })();
+    </script>
+    <style>
+      html { background: #F4F3FF; }
+      html.dark { background: #17191F; }
+    </style>
   </head>
   <body>
     <div id="root"></div>
