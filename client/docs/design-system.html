@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kanbot design system</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --paper:#F4F3FF;--surface:#fff;--field:#fff;--ink:#14123B;--ink2:#58577F;--line:#D9D7F0;
+  --indigo:#4F46E5;--indigo-h:#4338CA;--on-indigo:#fff;--signal:#22C55E;
+  --ghost-h:#EEEDFF;--ghost-edge:#D9D7F0;
+  --l-todo:#E6E3FF;--l-prog:#FFE7A3;--l-rev:#FFD2C7;--l-done:#C8F0D6;
+  --a-prog:#FFE7A3;--a-rev:#FFD2C7;--a-done:#C8F0D6;--on-a:#14123B;
+  --d-todo:#6C63F0;--d-prog:#D9A100;--d-rev:#E8765F;--d-done:#22A559;
+  --u-bg:#14123B;--u-fg:#F4F3FF;
+  --r-ctl:10px;--r-card:14px;--r-shell:22px;
+  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#17191F;--surface:#1F222A;--field:#181A20;--ink:#E2E5EC;--ink2:#9AA1B0;--line:#343845;
+  --indigo:#5E62E8;--indigo-h:#6F73EE;--on-indigo:#fff;--ghost-h:#2A2E38;--ghost-edge:#3A3F4C;
+  --l-todo:#1A1D24;--l-prog:#1A1D24;--l-rev:#1A1D24;--l-done:#1A1D24;
+  --a-prog:#F5C84C;--a-rev:#F08C7A;--a-done:#4ADE80;--on-a:#14161C;
+  --d-todo:#8B8FF8;--d-prog:#F5C84C;--d-rev:#F08C7A;--d-done:#4ADE80;--u-bg:rgba(248,113,113,.14);--u-fg:#FCA5A5}}
+:root[data-theme="dark"]{
+  --paper:#17191F;--surface:#1F222A;--field:#181A20;--ink:#E2E5EC;--ink2:#9AA1B0;--line:#343845;
+  --indigo:#5E62E8;--indigo-h:#6F73EE;--on-indigo:#fff;--ghost-h:#2A2E38;--ghost-edge:#3A3F4C;
+  --l-todo:#1A1D24;--l-prog:#1A1D24;--l-rev:#1A1D24;--l-done:#1A1D24;
+  --a-prog:#F5C84C;--a-rev:#F08C7A;--a-done:#4ADE80;--on-a:#14161C;
+  --d-todo:#8B8FF8;--d-prog:#F5C84C;--d-rev:#F08C7A;--d-done:#4ADE80;--u-bg:rgba(248,113,113,.14);--u-fg:#FCA5A5}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 15px/1.55 var(--body)}
+.wrap{max-width:1040px;margin:0 auto;padding:20px 20px 56px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font:800 24px var(--display);letter-spacing:-.02em}
+h1{font:800 clamp(32px,6vw,50px)/1.04 var(--display);letter-spacing:-.03em;margin:34px 0 10px;max-width:15ch}
+h2{font:700 20px var(--display);letter-spacing:-.01em;margin:42px 0 14px}
+p.lead{max-width:56ch;color:var(--ink2);margin:0}
+.btn{font:600 14px var(--body);height:42px;padding:0 18px;color:var(--on-indigo);background:var(--indigo);border:1px solid transparent;border-radius:var(--r-ctl);cursor:pointer;transition:background-color .15s,transform .1s}
+.btn:hover{background:var(--indigo-h)}
+.btn:active{transform:scale(.985)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--ghost-edge)}
+.btn.ghost:hover{background:var(--ghost-h)}
+.btn:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--indigo) 22%,transparent)}
+.in{height:44px;width:min(320px,100%);border-radius:var(--r-ctl);border:1px solid var(--line);background:var(--field);color:var(--ink);font:400 15px var(--body);padding:0 12px;transition:border-color .25s,box-shadow .25s}
+.in:hover{border-color:var(--ink2)}
+.in:focus-visible{outline:none;border-color:color-mix(in srgb,var(--indigo) 55%,var(--line));box-shadow:0 0 0 3px color-mix(in srgb,var(--indigo) 14%,transparent),0 0 18px 2px color-mix(in srgb,var(--indigo) 22%,transparent)}
+.sw{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.sw div{border-radius:var(--r-card);padding:14px;min-height:88px;display:flex;flex-direction:column;justify-content:flex-end;font-size:13px;border:1px solid var(--line)}
+.sw b{font:700 15px var(--display)}
+.shell{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-shell);padding:10px}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 8px 12px;flex-wrap:wrap}
+.bar h3{margin:0;font:700 18px var(--display)}
+.bar small{color:var(--ink2);font-size:13px}
+.prog{display:flex;align-items:flex-end;gap:4px;height:26px}
+.prog i{width:9px;border-radius:3px;background:var(--indigo)}
+.lanes{display:grid;grid-template-columns:repeat(4,minmax(190px,1fr));gap:10px;overflow-x:auto}
+.lane{border-radius:var(--r-card);padding:10px;min-height:200px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .lane{box-shadow:inset 0 3px 0 var(--d)}}
+:root[data-theme="dark"] .lane{box-shadow:inset 0 3px 0 var(--d)}
+.lane h4{margin:2px 4px 10px;font:600 14px var(--body);display:flex;align-items:center;gap:8px}
+.lane h4 i{width:9px;height:9px;border-radius:50%;background:var(--d)}
+.lane h4 span{margin-left:auto;color:var(--ink2);font-weight:500}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.card .k{font:500 12px var(--body);color:var(--ink2);font-variant-numeric:tabular-nums}
+.card .t{font-weight:500;margin:2px 0 8px}
+.meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.chip{font:500 12px var(--body);border:1px solid var(--line);border-radius:999px;padding:2px 9px}
+.chip.u{background:var(--pu-bg);color:var(--pu-fg);border-color:var(--pu-edge)}
+.pts{margin-left:auto;font:600 12px var(--body);border:1px solid var(--line);border-radius:8px;padding:2px 7px}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+:root{--fld:#fff;--fld-edge:#9894C2;--ai-bg:#E6E3FF;--ai-fg:#3730A3;--ai-edge:#C4C1E4;--ai-h:#DAD6FB;--head:#E4E7F1}
+@media (prefers-color-scheme:dark){:root:not([data-theme='light']){--fld:#1F222A;--fld-edge:#6B7385;--ai-bg:rgba(94,98,232,.18);--ai-fg:#C7C9FF;--ai-edge:rgba(120,124,245,.45);--ai-h:rgba(94,98,232,.3);--head:#2A2E38}}
+:root[data-theme='dark']{--fld:#1F222A;--fld-edge:#6B7385;--ai-bg:rgba(94,98,232,.18);--ai-fg:#C7C9FF;--ai-edge:rgba(120,124,245,.45);--ai-h:rgba(94,98,232,.3);--head:#2A2E38}
+.tool{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tool .grow{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+.fw{position:relative;display:block}
+.fw.s{flex:1 1 220px;max-width:340px}
+.fw svg{position:absolute;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--ink2)}
+.fw.s svg{left:12px}
+.fw.d svg{right:12px}
+.fld{height:42px;width:100%;border-radius:var(--r-ctl);border:1px solid var(--fld-edge);background:var(--fld);color:var(--ink);font:400 14px var(--body);padding:0 12px;transition:border-color .25s,box-shadow .25s}
+.fw.s .fld{padding-left:36px}
+.fw.d .fld{appearance:none;-webkit-appearance:none;padding-right:34px;min-width:150px}
+.fld:hover{border-color:var(--ink2)}
+.fld:focus-visible{outline:none;border-color:color-mix(in srgb,var(--indigo) 55%,var(--fld-edge));box-shadow:0 0 0 3px color-mix(in srgb,var(--indigo) 14%,transparent),0 0 18px 2px color-mix(in srgb,var(--indigo) 22%,transparent)}
+.btn.ai{display:inline-flex;align-items:center;gap:8px;background:var(--ai-bg);color:var(--ai-fg);border-color:var(--ai-edge)}
+.btn.ai:hover{background:var(--ai-h)}
+.btn.pri{display:inline-flex;align-items:center;gap:6px}
+@media (prefers-reduced-motion:reduce){.fld{transition:none}}
+.lst{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;margin-bottom:12px}
+.lh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;background:var(--head);border-bottom:1px solid var(--line)}
+.lh b{font:700 15px var(--display)}
+.lh .say{font-size:13px}
+.lh .grow{margin-left:auto;display:flex;gap:8px;align-items:center}
+.li{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.li:last-child{border-bottom:0}
+.li .k{font:500 12px var(--body);color:var(--ink2);font-variant-numeric:tabular-nums;min-width:56px}
+.li .t{flex:1;font-weight:500}
+.btn.sm{height:32px;padding:0 12px;font-size:13px}
+:root{--today-bg:#FEF6C9;--today-fg:#6B4A00;--today-edge:#F2D25B;--later-bg:transparent;--later-fg:#4B4A6B;--later-edge:#C4C1E4;--od-bg:#FCE7F3;--od-fg:#9D174D;--od-edge:#F4A9CE;--ctl:#E8E6FB;--ctl-h:#DDDAF8;--ctl-edge:#B9B5DD;--pu-bg:#FDECEA;--pu-fg:#B42318;--pu-edge:#E7AFAA;--ph-bg:#FFEDD4;--ph-fg:#7E2A0C;--ph-edge:#FFB86A;--pm-bg:#E0F2FE;--pm-fg:#075985;--pm-edge:#BAE6FD;--pl-bg:#F3F4F8;--pl-fg:#3D4859;--pl-edge:#AEB6C4}
+@media (prefers-color-scheme:dark){:root:not([data-theme='light']){--today-bg:rgba(250,204,21,.14);--today-fg:#FDE047;--today-edge:rgba(250,204,21,.4);--later-bg:transparent;--later-fg:#9AA1B0;--later-edge:#4A5060;--od-bg:rgba(244,114,182,.14);--od-fg:#F9A8D4;--od-edge:rgba(244,114,182,.4);--ctl:#2A2E38;--ctl-h:#343945;--ctl-edge:#4A5060;--pu-bg:#3B1D22;--pu-fg:#FCA5A5;--pu-edge:#75454A;--ph-bg:#441306;--ph-fg:#FFD6A8;--ph-edge:#9F2D00;--pm-bg:rgba(56,189,248,.13);--pm-fg:#7DD3FC;--pm-edge:rgba(56,189,248,.32);--pl-bg:rgba(148,163,184,.07);--pl-fg:#C5CCD8;--pl-edge:rgba(148,163,184,.45)}}
+:root[data-theme='dark']{--today-bg:rgba(250,204,21,.14);--today-fg:#FDE047;--today-edge:rgba(250,204,21,.4);--later-bg:transparent;--later-fg:#9AA1B0;--later-edge:#4A5060;--od-bg:rgba(244,114,182,.14);--od-fg:#F9A8D4;--od-edge:rgba(244,114,182,.4);--ctl:#2A2E38;--ctl-h:#343945;--ctl-edge:#4A5060;--pu-bg:#3B1D22;--pu-fg:#FCA5A5;--pu-edge:#75454A;--ph-bg:#441306;--ph-fg:#FFD6A8;--ph-edge:#9F2D00;--pm-bg:rgba(56,189,248,.13);--pm-fg:#7DD3FC;--pm-edge:rgba(56,189,248,.32);--pl-bg:rgba(148,163,184,.07);--pl-fg:#C5CCD8;--pl-edge:rgba(148,163,184,.45)}
+.chip.ph{background:var(--ph-bg);color:var(--ph-fg);border-color:var(--ph-edge)}
+.chip.pm{background:var(--pm-bg);color:var(--pm-fg);border-color:var(--pm-edge)}
+.chip.pl{background:var(--pl-bg);color:var(--pl-fg);border-color:var(--pl-edge)}
+.chip.od{display:inline-flex;align-items:center;gap:4px;background:var(--od-bg);color:var(--od-fg);border-color:var(--od-edge)}
+.chip.dt{display:inline-flex;align-items:center;gap:4px;background:var(--today-bg);color:var(--today-fg);border-color:var(--today-edge)}
+.chip.dl{display:inline-flex;align-items:center;gap:4px;background:var(--later-bg);color:var(--later-fg);border-color:var(--later-edge)}
+.pg{position:relative;border:1px dashed var(--line);border-radius:var(--r-card);padding:64px 16px 40px;display:flex;justify-content:center}
+.lc{width:min(360px,100%);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-shell);padding:24px}
+.tt{position:absolute;top:12px;right:12px;width:40px;height:40px;display:grid;place-items:center;border-radius:var(--r-ctl);border:1px solid var(--ctl-edge);background:var(--ctl);color:var(--ink);cursor:pointer;transition:background-color .15s}
+.tt:hover{background:var(--ctl-h)}
+.tt:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--indigo) 22%,transparent)}
+.tt .sun{display:none}
+@media (prefers-color-scheme:dark){:root:not([data-theme='light']) .tt .moon{display:none}:root:not([data-theme='light']) .tt .sun{display:block}}
+:root[data-theme='dark'] .tt .moon{display:none}
+:root[data-theme='dark'] .tt .sun{display:block}
+.say{font-size:13px;color:var(--ink2)}
+.type{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.type>div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-card);padding:16px}
+@media (prefers-reduced-motion:reduce){.btn,.in,.fld{transition:none}}
+.pill{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--ctl-edge);background:var(--ctl);color:var(--ink);font:500 13px var(--body);cursor:pointer;transition:background-color .15s}
+.pill:hover:not(:disabled){background:var(--ctl-h)}
+.pill:disabled{opacity:.5;cursor:not-allowed}
+.pill:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--indigo) 22%,transparent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><svg width="34" height="34" viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="110" fill="#4F46E5"/><circle cx="256" cy="94" r="26" fill="#22C55E"/><rect x="248" y="110" width="16" height="44" fill="#fff"/><rect x="104" y="150" width="304" height="250" rx="70" fill="#fff"/><rect x="78" y="232" width="40" height="86" rx="14" fill="#fff"/><rect x="394" y="232" width="40" height="86" rx="14" fill="#fff"/><rect x="146" y="190" width="220" height="166" rx="46" fill="#4F46E5"/><rect x="176" y="220" width="40" height="108" rx="10" fill="#fff"/><rect x="236" y="220" width="40" height="76" rx="10" fill="#fff"/><rect x="296" y="220" width="40" height="44" rx="10" fill="#22C55E"/></svg>Kanbot</div>
+  <button class="btn ghost" id="theme" type="button">Dark mode</button>
+</header>
+
+<h1>A sprint board with a face</h1>
+<p class="lead">Calm surfaces, one indigo for actions, and a single green signal that marks progress.</p>
+
+<h2>Palette</h2>
+<div class="sw">
+  <div style="background:var(--indigo);color:var(--on-indigo)"><b>Kanbot indigo</b>Actions, focus</div>
+  <div style="background:var(--paper)"><b>Page</b>Canvas</div>
+  <div style="background:var(--surface)"><b>Surface</b>Cards, panels</div>
+  <div style="background:var(--a-prog);color:var(--on-a)"><b>Butter</b>In progress</div>
+  <div style="background:var(--a-rev);color:var(--on-a)"><b>Peach</b>In review</div>
+  <div style="background:var(--a-done);color:var(--on-a)"><b>Mint</b>Done</div>
+  <div style="background:var(--signal);color:#052e16"><b>Signal</b>Progress meter only</div>
+</div>
+
+<h2>Type</h2>
+<div class="type">
+  <div><div style="font:800 32px/1 var(--display);letter-spacing:-.03em">Plan the week</div><p class="say" style="margin:10px 0 0">Bricolage Grotesque for headings only: logo, page titles, sprint and group names.</p></div>
+  <div><div>Inter for everything you read and click. Ticket keys use tabular numbers: <span style="font-variant-numeric:tabular-nums;font-weight:500">KAN-12</span> lines up with <span style="font-variant-numeric:tabular-nums;font-weight:500">KAN-108</span>.</div></div>
+</div>
+
+<h2>Controls</h2>
+<div class="row">
+  <button class="btn" type="button">Create sprint</button>
+  <button class="btn ghost" type="button">Cancel</button>
+  <button class='btn ai' type='button'><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linejoin='round' aria-hidden='true'><path d='M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z'/></svg>Ask AI</button>
+  <span class="say">Hover the buttons. AI buttons keep the same sparkle while a request runs: nothing pulses.</span>
+</div>
+<div class="row" style="margin-top:14px">
+  <input class="in" aria-label="Todo title" placeholder="Click to see the soft focus glow">
+</div>
+
+<h2>Toolbar: search, filters, actions</h2>
+<p class='say' style='margin:-6px 0 14px'>Fields sit on the surface colour so they lift off the page. AI actions get an indigo tint. One solid indigo button per screen.</p>
+<div class='tool'>
+  <label class='fw s'><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' aria-hidden='true'><circle cx='11' cy='11' r='7'/><path d='M20 20l-3.5-3.5'/></svg><input class='fld' placeholder='Search todos…' aria-label='Search todos'></label>
+  <label class='fw d'><select class='fld' aria-label='Priority'><option>All priorities</option><option>Urgent</option><option>High</option><option>Medium</option><option>Low</option></select><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M6 9l6 6 6-6'/></svg></label>
+  <label class='fw d'><select class='fld' aria-label='Type'><option>All types</option><option>Story</option><option>Task</option></select><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M6 9l6 6 6-6'/></svg></label>
+  <div class='grow'>
+    <button class='btn ai' type='button'><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linejoin='round' aria-hidden='true'><path d='M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z'/></svg>Generate todos with AI</button>
+    <button class='btn ai' type='button'><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linejoin='round' aria-hidden='true'><path d='M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z'/></svg>Plan sprint with AI</button>
+    <button class='btn pri' type='button'><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' aria-hidden='true'><path d='M12 5v14M5 12h14'/></svg>Create sprint</button>
+  </div>
+</div>
+
+<h2>Assistant quick actions</h2>
+<p class='say' style='margin:-6px 0 14px'>Pill buttons without an icon. Only the actions that belong to the current page are enabled: Create todos and Plan sprint on the backlog, Summarize sprint and Daily stand-up on the board and sprints pages. A short line says why the others are off.</p>
+<div class='row'>
+  <button class='pill' type='button'>Create todos</button>
+  <button class='pill' type='button'>Plan sprint</button>
+  <button class='pill' type='button' disabled>Summarize sprint</button>
+  <button class='pill' type='button' disabled>Daily stand-up</button>
+</div>
+<p class='say' style='margin:10px 0 0'>Summarize and stand-up are available on the board and sprints pages.</p>
+
+<h2>Theme toggle on auth pages</h2>
+<p class='say' style='margin:-6px 0 14px'>Outline button, 40px, top-right, with the same surface and border as every other outline button, so it reads as a control. Click it: it switches the whole page.</p>
+<div class='pg'>
+  <button class='tt' type='button' aria-label='Toggle theme' title='Switch theme' onclick='document.getElementById("theme").click()'>
+    <svg class='moon' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z'/></svg>
+    <svg class='sun' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' aria-hidden='true'><circle cx='12' cy='12' r='4'/><path d='M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4'/></svg>
+  </button>
+  <div class='lc'>
+    <div class='brand' style='justify-content:center;font-size:22px'>Kanbot</div>
+    <div style='text-align:center;margin:16px 0 18px'><div style='font:800 22px var(--display);letter-spacing:-.02em'>Welcome back</div><p class='say' style='margin:4px 0 0'>Log in to pick up your sprint.</p></div>
+    <div style='margin-bottom:12px'><div style='font-weight:500;font-size:14px;margin-bottom:6px'>Email</div><input class='fld' placeholder='you@example.com' aria-label='Email'></div>
+    <div style='margin-bottom:16px'><div style='font-weight:500;font-size:14px;margin-bottom:6px'>Password</div><input class='fld' type='password' placeholder='Your password' aria-label='Password'></div>
+    <button class='btn' type='button' style='width:100%'>Log in</button>
+  </div>
+</div>
+
+<h2>List groups</h2>
+<p class='say' style='margin:-6px 0 14px'>Group headers (sprint or backlog) use a tint that is different from both the page and the rows: a cool slate tint in light, a lighter slate in dark.</p>
+<div class='lst'>
+  <div class='lh'><svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M6 9l6 6 6-6'/></svg><b>Sprint 2</b><span class='say'>(planned)</span><span class='say'>No dates set · 2 todos · 4 pts</span>
+    <div class='grow'><button class='btn ghost sm' type='button'>Edit</button><button class='btn sm' type='button'>Start sprint</button></div></div>
+  <div class='li'><span class='k'>ASD-2</span><span class='t'>Set up landing page route</span><span class='chip'>Task</span><span class='chip ph'>▴ High</span><span class='pts'>1 pt</span></div>
+  <div class='li'><span class='k'>ASD-3</span><span class='t'>Build hero section component</span><span class='chip'>Story</span><span class='chip ph'>▴ High</span><span class='pts'>3 pts</span></div>
+</div>
+<div class='lst'>
+  <div class='lh'><b>Backlog</b><span class='say'>2 todos · 4 pts</span></div>
+  <div class='li'><span class='k'>ASD-9</span><span class='t'>Add meta tags for SEO</span><span class='chip'>Task</span><span class='chip pl'>▾ Low</span><span class='pts'>1 pt</span></div>
+  <div class='li'><span class='k'>ASD-10</span><span class='t'>Write end-to-end tests for landing page</span><span class='chip'>Task</span><span class='chip pm'>▬ Medium</span><span class='pts'>3 pts</span></div>
+</div>
+
+<h2>Due dates</h2>
+<p class='say' style='margin:-6px 0 14px'>Colour is spent only where attention is needed: overdue is rose, due today is amber, and a date that is still far away stays neutral. Each state has its own icon too.</p>
+<div class='row' style='align-items:stretch'>
+  <div class='card' style='width:230px'><div class='k'>KAN-26</div><div class='t'>Implement user login form</div><div class='meta'><span class='chip u'>▲ Urgent</span><span class='chip od'><svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' aria-hidden='true'><circle cx='12' cy='12' r='9'/><path d='M12 7v5l3 2'/></svg>Overdue · Nov 3</span></div></div>
+  <div class='card' style='width:230px'><div class='k'>KAN-9</div><div class='t'>Drag and drop between columns</div><div class='meta'><span class='chip ph'>▴ High</span><span class='chip dt'><svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' aria-hidden='true'><rect x='3' y='5' width='18' height='16' rx='2'/><path d='M3 10h18M8 3v4M16 3v4'/><circle cx='12' cy='15.5' r='1.6' fill='currentColor' stroke='none'/></svg>Due today</span></div></div>
+  <div class='card' style='width:230px'><div class='k'>KAN-22</div><div class='t'>Keyboard shortcuts</div><div class='meta'><span class='chip pl'>▾ Low</span><span class='chip dl'><svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' aria-hidden='true'><rect x='3' y='5' width='18' height='16' rx='2'/><path d='M3 10h18M8 3v4M16 3v4'/></svg>Due Nov 20</span></div></div>
+</div>
+
+<h2>The board</h2>
+<p class="say" style="margin:-6px 0 14px">In dark mode each lane gets a 3px top line in the same colour as its status dot. It follows the lane's rounded corners.</p>
+<div class="shell">
+  <div class="bar">
+    <div><h3>Sprint 3: Auth flow</h3><small>Nov 2 – Nov 16 · 9 days left</small></div>
+    <div class="row"><span class="say">12 of 21 points</span><div class="prog" aria-hidden="true"><i style="height:10px"></i><i style="height:16px"></i><i style="height:26px;background:var(--signal)"></i></div></div>
+  </div>
+  <div class="lanes">
+    <div class="lane" style="background:var(--l-todo);--d:var(--d-todo)"><h4><i></i>To do <span>2</span></h4>
+      <div class="card"><div class="k">KAN-14</div><div class="t">Password reset email</div><div class="meta"><span class="chip pm">▬ Medium</span><span class="pts">3</span></div></div>
+      <div class="card"><div class="k">KAN-15</div><div class="t">Rate-limit login</div><div class="meta"><span class="chip ph">▴ High</span><span class="pts">5</span></div></div></div>
+    <div class="lane" style="background:var(--l-prog);--d:var(--d-prog)"><h4><i></i>In progress <span>1</span></h4>
+      <div class="card"><div class="k">KAN-12</div><div class="t">Login screen</div><div class="meta"><span class="chip u">▲ Urgent</span><span class="chip od"><svg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' aria-hidden='true'><circle cx='12' cy='12' r='9'/><path d='M12 7v5l3 2'/></svg>Overdue · Nov 6</span><span class="pts">3</span></div></div></div>
+    <div class="lane" style="background:var(--l-rev);--d:var(--d-rev)"><h4><i></i>In review <span>1</span></h4>
+      <div class="card"><div class="k">KAN-11</div><div class="t">Register validation</div><div class="meta"><span class="chip ph">▴ High</span><span class="pts">2</span></div></div></div>
+    <div class="lane" style="background:var(--l-done);--d:var(--d-done)"><h4><i></i>Done <span>1</span></h4>
+      <div class="card"><div class="k">KAN-9</div><div class="t">Project setup</div><div class="meta"><span class="chip pl">▾ Low</span><span class="pts">1</span></div></div></div>
+  </div>
+</div>
+</div>
+<script>
+(function(){
+  var r=document.documentElement,b=document.getElementById('theme');
+  function dark(){var t=r.getAttribute('data-theme');return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches}
+  function label(){b.textContent=dark()?'Light mode':'Dark mode'}
+  b.addEventListener('click',function(){r.setAttribute('data-theme',dark()?'light':'dark');label()});label();
+})();
+</script>
+</body>
+</html>
