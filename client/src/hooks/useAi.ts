@@ -5,6 +5,9 @@ import type { ChatMessage, GenerateTodosRequest, PlanSprintRequest } from "@/typ
 /** The API accepts 1 to 30 messages per chat request, the last one from the user. */
 export const MAX_CHAT_MESSAGES = 30
 
+/* Every AI mutation starts with this key, so "is any AI request running?" is one useIsMutating call. */
+export const AI_MUTATION_KEY = ["ai"] as const
+
 export const aiKeys = {
     status: ["ai-status"] as const,
 }
@@ -28,6 +31,7 @@ export function useAiStatus() {
 
 export function useChat(projectId: string) {
     return useMutation({
+        mutationKey: [...AI_MUTATION_KEY, "chat"],
         // Only the most recent messages are sent; the screen still shows the whole conversation.
         mutationFn: (messages: ChatMessage[]) => aiApi.chat(projectId, messages.slice(-MAX_CHAT_MESSAGES)),
     })
@@ -35,22 +39,24 @@ export function useChat(projectId: string) {
 
 export function useGenerateTodos(projectId: string) {
     return useMutation({
+        mutationKey: [...AI_MUTATION_KEY, "generate"],
         mutationFn: (body: GenerateTodosRequest) => aiApi.generateTodos(projectId, body),
     })
 }
 
 export function usePlanSprint(projectId: string) {
     return useMutation({
+        mutationKey: [...AI_MUTATION_KEY, "plan"],
         mutationFn: (body: PlanSprintRequest) => aiApi.planSprint(projectId, body),
     })
-    }
+}
 
-    export function useSprintSummary() {
+export function useSprintSummary() {
     const queryClient = useQueryClient()
     return useMutation({
+        mutationKey: [...AI_MUTATION_KEY, "summary"],
         mutationFn: (sprintId: string) => aiApi.summarize(sprintId),
-        // The server saved the summary on the sprint: refresh every sprint query (the list and the boards) so it
-        // shows up. Returning the promise keeps the mutation "pending" until the saved summary has arrived.
+        // The server saved the summary on the sprint: refresh every sprint query so it shows up.
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ["sprints"] }),
     })
 }

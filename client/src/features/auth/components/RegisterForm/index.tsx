@@ -56,8 +56,8 @@ export function RegisterForm() {
             </div>
         )}
 
-        <form onSubmit={onSubmit} noValidate className="space-y-4">
-            <div className="space-y-1.5">
+        <form onSubmit={onSubmit} noValidate className="space-y-5">
+            <div className="space-y-2">
             <label htmlFor="name" className="text-sm font-medium">Name</label>
             <Input
                 id="name"

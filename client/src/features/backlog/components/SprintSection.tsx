@@ -10,9 +10,7 @@ import { TodoRow } from "./TodoRow"
 interface SprintSectionProps {
     sprint: Sprint
     todos: Todo[]
-    /** Planned and active sprints, for each row's "Move to…" menu. */
     moveTargets: Sprint[]
-    /** The project's active sprint, if any: only one sprint can be active, so it blocks "Start sprint". */
     activeSprint: Sprint | undefined
     onOpenTodo: (todo: Todo) => void
     onEdit: (sprint: Sprint) => void
@@ -34,51 +32,61 @@ export function SprintSection({
     const reasonId = `sprint-${sprint.id}-start-reason`
     const blocked = activeSprint !== undefined
 
-    return (
+  return (
         <section
         aria-labelledby={headingId}
-        className="overflow-hidden rounded-lg border bg-card text-card-foreground"
+        className="@container overflow-hidden rounded-lg  bg-card text-card-foreground"
         >
+        {/* Narrow: name, then dates, then the buttons, each on its own line. From 32rem up: one wrapping line, buttons on the right. */}
         <header
-            className={cn("flex flex-wrap items-center gap-x-3 gap-y-2 bg-muted px-4 py-3", expanded && "border-b")}
+            className={cn(
+            "flex flex-wrap items-center gap-x-3 gap-y-2 bg-list-head px-3 py-3 @2xl:px-4",
+            expanded && "border-b",
+            )}
         >
-            <h2 id={headingId} className="text-sm font-semibold">
+            <h2 id={headingId} className="min-w-0">
             <button
                 type="button"
                 aria-expanded={expanded}
                 aria-controls={listId}
                 onClick={() => setExpanded((value) => !value)}
-                className="flex items-center gap-1.5 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="flex items-center gap-2 rounded-sm text-left outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
                 <ChevronDown
-                className={cn("size-4 transition-transform", !expanded && "-rotate-90")}
+                className={cn("size-4 shrink-0 transition-transform", !expanded && "-rotate-90")}
                 aria-hidden="true"
                 />
-                {sprint.name}
-                <span className="font-normal text-muted-foreground">(planned)</span>
+                <span className="font-display text-[15px] font-bold wrap-break-word">{sprint.name}</span>
+                <span className="text-[13px] font-normal text-muted-foreground">(planned)</span>
             </button>
             </h2>
 
-            <span className="text-xs text-muted-foreground">
+            <span className="w-full text-[13px] text-muted-foreground @lg:w-auto">
             {formatDateRange(sprint.startDate, sprint.endDate)} · {summarizeTodos(todos)}
             </span>
 
-            <div className="ml-auto flex items-center gap-2">
+            <div className="flex w-full flex-wrap items-center gap-2 @lg:ml-auto @lg:w-auto">
             {blocked && (
-                <span id={reasonId} className="text-xs text-muted-foreground">
+                <span id={reasonId} className="w-full text-xs text-muted-foreground @lg:w-auto">
                 {activeSprint.name} is already active
                 </span>
             )}
-            <Button type="button" variant="outline" size="sm" onClick={() => onEdit(sprint)}>
+            {/* Design system: Edit is a ghost button (transparent, light border), 32px tall.
+                In dark mode the ghost hover color equals the header color, so it gets a white wash instead. */}
+            <Button
+                type="button"
+                variant="ghost"
+                className="btn-surface h-8 border border-ghost-edge px-3 text-[13px] hover:bg-ghost-hover dark:hover:bg-white/10"
+                onClick={() => onEdit(sprint)}
+            >
                 Edit
             </Button>
             {/* aria-disabled (not disabled): the button stays focusable and the reason is read out with it. */}
             <Button
                 type="button"
-                size="sm"
                 aria-disabled={blocked || undefined}
                 aria-describedby={blocked ? reasonId : undefined}
-                className={cn(blocked && "cursor-not-allowed opacity-50 hover:bg-primary")}
+                className={cn("h-8 px-3 text-[13px]", blocked && "cursor-not-allowed opacity-50 hover:bg-primary")}
                 onClick={() => {
                 if (!blocked) onStart(sprint)
                 }}

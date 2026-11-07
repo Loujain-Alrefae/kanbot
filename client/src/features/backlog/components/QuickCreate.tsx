@@ -25,41 +25,41 @@ export function QuickCreate({ projectId, filtersActive = false }: QuickCreatePro
     const createTodo = useCreateTodo(projectId)
 
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    // A second Enter while the first request is running must not create a duplicate.
-    if (createTodo.isPending) return
+        event.preventDefault()
+        // A second Enter while the first request is running must not create a duplicate.
+        if (createTodo.isPending) return
 
-    const parsed = titleSchema.safeParse(title)
-    if (!parsed.success) {
+        const parsed = titleSchema.safeParse(title)
+        if (!parsed.success) {
         setError(parsed.error.issues[0]?.message ?? "Enter a valid title")
         return
-    }
+        }
 
-    // Defaults (task, medium, no points, backlog, end of the list) come from the server.
-    createTodo.mutate(
+        // Defaults (task, medium, no points, backlog, end of the list) come from the server.
+        createTodo.mutate(
         { title: parsed.data },
         {
-        onSuccess: () => {
+            onSuccess: () => {
             setTitle("")
             setError(null)
             toast.success("Todo created", {
                 id: "todo-created",
                 description: filtersActive ? "It may be hidden by your current filters." : undefined,
             })
-          // The list just grew above this field: keep it in view so the next title can be typed.
+            // The list just grew above this field: keep it in view so the next title can be typed.
             requestAnimationFrame(() => inputRef.current?.scrollIntoView({ block: "nearest" }))
-        },
-        onError: (err) => {
-          // A server validation error belongs under the field; anything else (network, 500) is a toast.
-          // The typed title stays in the field so the user does not lose it.
+            },
+            onError: (err) => {
+            // A server validation error belongs under the field; anything else (network, 500) is a toast.
+            // The typed title stays in the field so the user does not lose it.
             const message = fieldErrors(err).title
             if (message) setError(message)
             else toast.error(err.message)
+            },
         },
-        },
-    )
+        )
     }
-    
+
     function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
         if (event.key === "Escape") {
         setTitle("")
@@ -68,42 +68,45 @@ export function QuickCreate({ projectId, filtersActive = false }: QuickCreatePro
     }
 
     return (
-    <form onSubmit={handleSubmit} noValidate className="border-t border-dashed px-4 py-3">
-        <div className="flex items-center gap-3">
-        <label htmlFor={QUICK_CREATE_INPUT_ID} className="flex shrink-0 items-center gap-1 text-sm font-medium">
+        <form onSubmit={handleSubmit} noValidate className="border-t border-dashed px-3 py-3 @2xl:px-4">
+        {/* Narrow (< 28rem): the label sits above the field, which gets the full width. Otherwise: one line. */}
+        <div className="flex flex-col gap-2 @md:flex-row @md:items-center @md:gap-3">
+            <label htmlFor={QUICK_CREATE_INPUT_ID} className="flex shrink-0 items-center gap-1 text-sm font-medium">
             <Plus className="size-4" aria-hidden="true" />
             Create todo
-        </label>
+            </label>
 
-        <Input
-            ref={inputRef}
-            id={QUICK_CREATE_INPUT_ID}
-            value={title}
-            onChange={(event) => {
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+            <Input
+                ref={inputRef}
+                id={QUICK_CREATE_INPUT_ID}
+                value={title}
+                onChange={(event) => {
                 setTitle(event.target.value)
                 if (error) setError(null)
-            }}
-            onKeyDown={handleKeyDown}
-            // readOnly (not disabled): a disabled input loses focus, which would break typing the next todo.
-            readOnly={createTodo.isPending}
-            placeholder="Type a title and press Enter"
-            autoComplete="off"
-            aria-invalid={error ? true : undefined}
-            aria-describedby={error ? ERROR_ID : undefined}
-            className="h-8 flex-1"
-        />
+                }}
+                onKeyDown={handleKeyDown}
+                // readOnly (not disabled): a disabled input loses focus, which would break typing the next todo.
+                readOnly={createTodo.isPending}
+                placeholder="Type a title and press Enter"
+                autoComplete="off"
+                aria-invalid={error ? true : undefined}
+                aria-describedby={error ? ERROR_ID : undefined}
+                className="h-9 min-w-0 flex-1 @md:h-8"
+            />
 
-        {/* Fixed-size slot so the input does not change width when the spinner appears. */}
-        <span className="size-4 shrink-0">
-            {createTodo.isPending && (
+            {/* Fixed-size slot so the input does not change width when the spinner appears. */}
+            <span className="size-4 shrink-0">
+                {createTodo.isPending && (
                 <>
-                <Loader2 className="size-4 animate-spin text-muted-foreground" aria-hidden="true" />
-                <span role="status" className="sr-only">
+                    <Loader2 className="size-4 animate-spin text-muted-foreground" aria-hidden="true" />
+                    <span role="status" className="sr-only">
                     Creating todo…
-                </span>
+                    </span>
                 </>
-            )}
+                )}
             </span>
+            </div>
         </div>
 
         {error && (

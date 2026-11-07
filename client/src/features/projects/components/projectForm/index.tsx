@@ -78,14 +78,14 @@ export function ProjectForm({ project, onDone }: ProjectFormProps) {
     })
 
     return (
-        <form onSubmit={onSubmit} noValidate className="space-y-4">
+        <form onSubmit={onSubmit} noValidate className="space-y-5">
         {formError && (
             <div role="alert" className="rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
             {formError}
             </div>
         )}
 
-        <div className="space-y-1.5">
+        <div className="space-y-2">
             <label htmlFor="project-name" className="text-sm font-medium">Name</label>
             <Input
             id="project-name"
@@ -99,7 +99,7 @@ export function ProjectForm({ project, onDone }: ProjectFormProps) {
             {errors.name && <p id="project-name-error" className="text-sm text-destructive">{errors.name.message}</p>}
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-2">
             <label htmlFor="project-key" className="text-sm font-medium">Key</label>
             <Input
             id="project-key"
@@ -126,7 +126,7 @@ export function ProjectForm({ project, onDone }: ProjectFormProps) {
             )}
         </div>
 
-        <div className="space-y-1.5">
+        <div className="space-y-2">
             <label htmlFor="project-description" className="text-sm font-medium">Description</label>
             <Textarea
             id="project-description"

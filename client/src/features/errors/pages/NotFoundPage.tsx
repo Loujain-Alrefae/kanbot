@@ -1,4 +1,4 @@
-import { ArrowLeft, Compass } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { Link, useNavigate } from "react-router"
 import { Button, buttonVariants } from "@/components/ui/button"
 
@@ -12,9 +12,9 @@ export function NotFoundPage() {
   return (
     <main className="flex min-h-dvh items-center justify-center bg-background px-6 py-12">
       <div className="w-full max-w-md text-center">
-        <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
+        {/* <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-accent text-accent-foreground">
           <Compass className="size-8" aria-hidden="true" />
-        </div>
+        </div> */}
 
         <p aria-hidden="true" className="mt-6 text-7xl font-extrabold tracking-tight text-primary">
           404

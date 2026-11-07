@@ -7,7 +7,7 @@ import { SprintProgress } from "./SprintProgress"
 interface SprintHeaderProps {
     sprint: Sprint
     totals: BoardTotals
-  /** Buttons on the right. Step 6: "Complete sprint". Day 5: "Summarize". */
+    /** Buttons on the right (Summarize, Complete sprint). */
     actions?: ReactNode
 }
 
@@ -20,8 +20,8 @@ export function SprintHeader({ sprint, totals, actions }: SprintHeaderProps) {
         <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
             <div className="min-w-0 space-y-1">
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <h2 id="sprint-heading" className="text-lg font-semibold">
-                {sprint.name}
+                <h2 id="sprint-heading" className="font-display text-lg font-bold tracking-tight">
+                    {sprint.name}
                 </h2>
                 <p className="text-sm text-muted-foreground">{meta}</p>
             </div>

@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { useSprints } from "@/hooks/useSprints"
 import { SprintDetails } from "../components/SprintDetails"
 import { SprintListItem } from "../components/SprintListItem"
+import { VelocityChart } from "../components/VelocityChart"
 
 function wantsAutoSummary(state: unknown): boolean {
     return typeof state === "object" && state !== null && "autoSummary" in state && state.autoSummary === true
@@ -70,31 +71,35 @@ function wantsAutoSummary(state: unknown): boolean {
         const selected = sprintId ? list.find((sprint) => sprint.id === sprintId) : list[0]
 
         content = (
-        <div className="grid gap-6 lg:grid-cols-[minmax(16rem,22rem)_1fr] lg:items-start">
-            <nav aria-label="All sprints">
-            <h2 className="mb-3 text-sm font-medium">All sprints</h2>
-            <ul className="space-y-3">
-                {list.map((sprint) => (
-                <li key={sprint.id}>
-                    <SprintListItem sprint={sprint} selected={sprint.id === selected?.id} />
-                </li>
-                ))}
-            </ul>
-            </nav>
+        <div className="space-y-6">
+            
+            <div className="grid gap-6 lg:grid-cols-[minmax(16rem,22rem)_1fr] lg:items-start">
+                <nav aria-label="All sprints">
+                <h2 className="font-display mb-3 text-sm font-medium">All sprints</h2>
+                <ul className="space-y-3">
+                    {list.map((sprint) => (
+                    <li key={sprint.id}>
+                        <SprintListItem sprint={sprint} selected={sprint.id === selected?.id} />
+                    </li>
+                    ))}
+                </ul>
+                </nav>
 
-            {selected ? (
-            <SprintDetails key={selected.id} sprint={selected} autoSummary={selected.id === autoSprintId} />
-            ) : (
-            <EmptyState
-                title="Sprint not found"
-                description="This sprint doesn't exist in this project."
-                action={
-                <Link to={`/projects/${projectId}/sprints`} className={buttonVariants()}>
-                    Show all sprints
-                </Link>
-                }
-            />
-            )}
+                {selected ? (
+                <SprintDetails key={selected.id} sprint={selected} autoSummary={selected.id === autoSprintId} />
+                ) : (
+                <EmptyState
+                    title="Sprint not found"
+                    description="This sprint doesn't exist in this project."
+                    action={
+                    <Link to={`/projects/${projectId}/sprints`} className={buttonVariants()}>
+                        Show all sprints
+                    </Link>
+                    }
+                />
+                )}
+            </div>
+            <VelocityChart sprints={list} />
         </div>
         )
     }

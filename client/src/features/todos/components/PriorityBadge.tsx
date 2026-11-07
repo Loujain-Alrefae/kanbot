@@ -4,18 +4,14 @@ import { PRIORITY_LABELS } from "@/lib/todo"
 import { cn } from "@/lib/utils"
 import type { TodoPriority } from "@/types/api"
 
-// Each level has its own icon AND its own text: color is never the only signal (NFR-5).
-// low -> neutral, medium -> brand (accent), high -> orange, urgent -> destructive: a calm-to-loud scale
-// that follows the theme tokens, so it adapts to light and dark by itself.
-// Urgent uses the destructive-TEXT / -SUBTLE tokens: the solid --destructive is only for filled buttons.
 const STYLES: Record<TodoPriority, { icon: LucideIcon; className: string }> = {
     low: {
         icon: ChevronDown,
-        className: "border-border bg-secondary text-secondary-foreground",
+        className: "border-prio-low-edge bg-prio-low-bg text-prio-low-fg",
     },
     medium: {
         icon: Equal,
-        className: "border-primary/25 bg-accent text-accent-foreground",
+        className: "border-prio-med-edge bg-prio-med-bg text-prio-med-fg",
     },
     high: {
         icon: ChevronUp,

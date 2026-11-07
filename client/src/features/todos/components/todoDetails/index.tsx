@@ -1,4 +1,4 @@
-import { Controller } from "react-hook-form"
+import { Controller ,useWatch } from "react-hook-form"
 import type { UseFormReturn } from "react-hook-form"
 import { OptionSelect } from "@/components/OptionSelect"
 import type { SelectOption } from "@/components/OptionSelect"
@@ -10,6 +10,7 @@ import { LabelsInput } from "../LabelsInput"
 import { MAX_LABEL_LENGTH, MAX_LABELS, NO_POINTS_VALUE, TODO_FORM_ID } from "./config"
 import type { TodoFormValues } from "./config"
 import { Field, describe } from "@/components/FormField"
+import { EstimateSuggestion } from "@/features/ai/components/EstimateSuggestion"
 
 const POINT_SELECT_OPTIONS: SelectOption[] = [
   { value: NO_POINTS_VALUE, label: "None" },
@@ -52,6 +53,7 @@ interface TodoDetailsFormProps {
   sprintDisabled: boolean
   sprintHint?: string
   sprintPlaceholder: string
+  projectId: string
 }
 
 export function TodoDetailsForm({
@@ -61,10 +63,12 @@ export function TodoDetailsForm({
   sprintDisabled,
   sprintHint,
   sprintPlaceholder,
+  projectId
 }: TodoDetailsFormProps) {
   const { register, formState } = form
   const { errors } = formState
   const dueDate = form.watch("dueDate")
+  const title = useWatch({ control: form.control, name: "title" })
 
   return (
     <form
@@ -103,6 +107,16 @@ export function TodoDetailsForm({
         <SelectField form={form} name="priority" label="Priority" options={PRIORITY_OPTIONS} />
         <SelectField form={form} name="type" label="Type" options={TYPE_OPTIONS} />
         <SelectField form={form} name="storyPoints" label="Story points" options={POINT_SELECT_OPTIONS} />
+          <EstimateSuggestion
+            projectId={projectId}
+            canEstimate={title.trim().length > 0}
+            read={() => ({
+              title: form.getValues("title"),
+              description: form.getValues("description"),
+              type: form.getValues("type"),
+          })}
+          onApply={(points) => form.setValue("storyPoints", String(points), { shouldDirty: true })}
+        />
 
         <Controller
           control={form.control}

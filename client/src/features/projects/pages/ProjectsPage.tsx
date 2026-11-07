@@ -70,6 +70,7 @@ export function ProjectsPage() {
                 <Input
                 type="search"
                 value={search}
+                data-hotkey="search"
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search projects…"
                 aria-label="Search projects"

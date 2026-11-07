@@ -13,10 +13,8 @@ import { SortableTodoRow } from "./SortableTodoRow"
 interface BacklogSectionProps {
     projectId: string
     todos: Todo[]
-    /** Planned and active sprints: targets of the row menu's "Move to…". */
     moveTargets: Sprint[]
     onOpenTodo: (todo: Todo) => void
-    /** true when a search or filter is applied: an empty list then means "no match", and reordering is off. */
     filtersActive: boolean
     onClearFilters: () => void
 }
@@ -33,20 +31,21 @@ export function BacklogSection({
     const rows = dnd.todos // the cache, or the new order for the instant after a drop
 
     return (
+        // @container: the rows and the quick-create field choose their layout from THIS section's width.
         <section
         aria-labelledby="backlog-heading"
-        className="overflow-hidden rounded-lg border bg-card text-card-foreground"
+        className="@container overflow-hidden rounded-lg  bg-card text-card-foreground"
         >
-        <header className="flex items-center gap-3 border-b bg-muted px-4 py-3">
-            <h2 id="backlog-heading" className="text-sm font-semibold">
+        <header className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b bg-list-head px-3 py-3 @2xl:px-4">
+            <h2 id="backlog-heading" className="font-display text-[15px] font-bold">
             Backlog
             </h2>
-            <span className="text-xs text-muted-foreground">{summarizeTodos(rows)}</span>
+            <span className="text-[13px] text-muted-foreground">{summarizeTodos(rows)}</span>
         </header>
 
         {/* A filtered list is not the real order, so reordering is off. Say why, and offer the way out (BL-6). */}
         {filtersActive && rows.length > 1 && (
-            <p className="border-b bg-muted/50 px-4 py-2 text-xs text-muted-foreground">
+            <p className="border-b bg-muted/50 px-3 py-2 text-xs text-muted-foreground @2xl:px-4">
             Reordering is off while search or filters are active.{" "}
             <button
                 type="button"
@@ -106,19 +105,20 @@ export function BacklogSection({
 
 export function BacklogSectionSkeleton() {
     return (
-        <div aria-busy="true" className="overflow-hidden rounded-lg border bg-card">
+        <div aria-busy="true" className="@container overflow-hidden rounded-lg border bg-card">
         <span className="sr-only">Loading backlog…</span>
-        <div className="border-b bg-muted px-4 py-3">
+        <div className="border-b bg-list-head px-3 py-3 @2xl:px-4">
             <Skeleton className="h-4 w-40 bg-border" />
         </div>
         {Array.from({ length: 6 }, (_, i) => (
-            <div key={i} className="flex items-center gap-3 border-b px-4 py-3 last:border-b-0">
-            <Skeleton className="size-7 bg-secondary" />
-            <Skeleton className="h-4 w-14 bg-secondary" />
-            <Skeleton className="h-4 flex-1 bg-secondary" />
-            <Skeleton className="h-5 w-16 bg-secondary" />
-            <Skeleton className="h-5 w-20 bg-secondary" />
-            <Skeleton className="h-5 w-12 bg-secondary" />
+            <div key={i} className="flex items-center gap-3 border-b px-3 py-3 last:border-b-0 @2xl:px-4">
+            <Skeleton className="size-7 shrink-0 bg-secondary" />
+            <Skeleton className="h-4 w-14 shrink-0 bg-secondary" />
+            <Skeleton className="h-4 min-w-0 flex-1 bg-secondary" />
+            {/* The chip columns only exist in the wide layout. */}
+            <Skeleton className="hidden h-5 w-16 shrink-0 bg-secondary @2xl:block" />
+            <Skeleton className="hidden h-5 w-20 shrink-0 bg-secondary @2xl:block" />
+            <Skeleton className="hidden h-5 w-12 shrink-0 bg-secondary @2xl:block" />
             </div>
         ))}
         </div>

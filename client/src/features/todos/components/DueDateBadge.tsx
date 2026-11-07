@@ -1,4 +1,4 @@
-import { AlertCircle, CalendarClock, CalendarDays } from "lucide-react"
+import { CalendarClock, CalendarDays, Clock } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { dueInfo } from "@/lib/dates"
 import type { DueState } from "@/lib/dates"
@@ -6,19 +6,19 @@ import { cn } from "@/lib/utils"
 import type { Todo } from "@/types/api"
 
 // Each state has its own icon AND its own text: color only adds emphasis (NFR-5).
+// Overdue is rose (never confused with "urgent"), today is amber, a date still far away stays neutral.
 const STYLES: Record<DueState, { icon: LucideIcon; className: string }> = {
     overdue: {
-        icon: AlertCircle,
-        className: "border-destructive-text/30 bg-destructive-subtle text-destructive-text",
+        icon: Clock,
+        className: "border-overdue-edge bg-overdue-bg text-overdue-fg",
     },
     today: {
         icon: CalendarClock,
-        className:
-        "border-orange-300 bg-orange-100 text-orange-900 dark:border-orange-800 dark:bg-orange-950 dark:text-orange-200",
+        className: "border-today-edge bg-today-bg text-today-fg",
     },
     upcoming: {
         icon: CalendarDays,
-        className: "border-border bg-secondary text-secondary-foreground",
+        className: "border-later-edge bg-later-bg text-later-fg",
     },
 }
 

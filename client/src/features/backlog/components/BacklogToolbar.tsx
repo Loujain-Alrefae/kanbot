@@ -32,6 +32,7 @@ export function BacklogToolbar({ filters, onChange, onClear, onCreateSprint }: B
             />
             <Input
                 type="search"
+                data-hotkey="search"
                 value={filters.search}
                 onChange={(event) => onChange({ search: event.target.value })}
                 placeholder="Search todos…"
@@ -65,9 +66,13 @@ export function BacklogToolbar({ filters, onChange, onClear, onCreateSprint }: B
         </div>
 
         <div className="ml-auto flex flex-wrap items-center gap-3">
-            <AiButton onClick={openGenerate}>Generate todos with AI</AiButton>
-            <AiButton onClick={openPlan}>Plan sprint with AI</AiButton>
-            <Button type="button" variant="outline" onClick={onCreateSprint}>
+            <AiButton className="px-2.5" onClick={openGenerate}>
+            Generate todos with AI
+            </AiButton>
+            <AiButton className="px-2.5" onClick={openPlan}>
+            Plan sprint with AI
+            </AiButton>
+            <Button type="button" className="px-3" onClick={onCreateSprint}>
             <Plus className="size-4" aria-hidden="true" />
             Create sprint
             </Button>

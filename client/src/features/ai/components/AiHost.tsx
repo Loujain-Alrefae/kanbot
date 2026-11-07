@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from "react"
 import { useMatch } from "react-router"
 import { toast } from "sonner"
 import { useChat } from "@/hooks/useAi"
-import { useActiveSprint } from "@/hooks/useSprints"
+import { useActiveSprint, useSprintBoard } from "@/hooks/useSprints"
 import { useAiUiStore } from "@/store/ai-ui.store"
 import type { ChatMessage } from "@/types/api"
 import { loadChat, saveChat } from "../lib/chatStorage"
+import { buildStandupPrompt } from "../lib/standup"
 import { suggestionsFor } from "../lib/suggestions"
 import { AssistantDrawer } from "./AssistantDrawer"
 import { GenerateTodosDialog } from "./GenerateTodosDialog"
@@ -17,7 +18,6 @@ export function AiHost() {
     const projectId = match?.params.projectId
     if (!projectId) return null
 
-    // "board" or "sprints/abc" -> the first segment is the page (for the suggested questions).
     const section = match?.params["*"]?.split("/")[0]
 
     // key = projectId: switching projects remounts this, so each project loads its own conversation (AI-1).
@@ -35,14 +35,14 @@ function AiHostView({ projectId, section }: { projectId: string; section: string
     const closeSummary = useAiUiStore((s) => s.closeSummary)
     const closeAll = useAiUiStore((s) => s.closeAll)
 
-    // The conversation is UI state, kept here so it survives closing the drawer (and a reload, E2).
     const [messages, setMessages] = useState<ChatMessage[]>(() => loadChat(projectId))
     const chat = useChat(projectId)
     const activeSprint = useActiveSprint(projectId)
+    // Same cache as the board page: the stand-up is built from the active sprint's columns.
+    const board = useSprintBoard(activeSprint.data?.id)
 
     useEffect(() => closeAll, [closeAll])
 
-    // E2: keep the conversation in localStorage (text only). An empty chat removes the entry.
     useEffect(() => {
         saveChat(projectId, messages)
     }, [projectId, messages])
@@ -66,6 +66,12 @@ function AiHostView({ projectId, section }: { projectId: string; section: string
     function handleNewChat() {
         chat.reset()
         setMessages([])
+    }
+
+    // X6: the request is built from live data and sent like any other message.
+    function handleStandup() {
+        if (!activeSprint.data || !board.data || chat.isPending) return
+        handleSend(buildStandupPrompt(activeSprint.data, board.data.columns))
     }
 
     // E3: other screens ask the assistant through the store ("Improve with AI").
@@ -100,8 +106,11 @@ function AiHostView({ projectId, section }: { projectId: string; section: string
             pending={chat.isPending}
             error={chat.error}
             hasActiveSprint={Boolean(activeSprint.data)}
+            standupReady={board.isSuccess}
             suggestions={suggestionsFor(section)}
+            section={section}
             onSend={handleSend}
+            onStandup={handleStandup}
             onRetry={handleRetry}
             onNewChat={handleNewChat}
         />

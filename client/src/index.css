@@ -2,12 +2,16 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
+@import "@fontsource/bricolage-grotesque/700.css";
+@import "@fontsource/bricolage-grotesque/800.css";
 
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --font-sans: "Inter Variable", system-ui, sans-serif;
+  /* headings only: logo, page titles, sprint name */
+  --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -43,10 +47,54 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* board lanes and status dots */
+  --color-lane-todo: var(--lane-todo);
+  --color-lane-progress: var(--lane-progress);
+  --color-lane-review: var(--lane-review);
+  --color-lane-done: var(--lane-done);
+  --color-dot-todo: var(--dot-todo);
+  --color-dot-progress: var(--dot-progress);
+  --color-dot-review: var(--dot-review);
+  --color-dot-done: var(--dot-done);
+  --color-signal: var(--signal);
+
+  /* form fields (search, selects, inputs) */
+  --color-field: var(--field);
+
+  /* list group header (Sprint / Backlog) */
+  --color-list-head: var(--list-head);
+
+  /* priority, overdue and due-date badges: bg-prio-high-bg text-prio-high-fg border-prio-high-edge */
+  --color-prio-urgent-bg: var(--prio-urgent-bg);
+  --color-prio-urgent-fg: var(--prio-urgent-fg);
+  --color-prio-urgent-edge: var(--prio-urgent-edge);
+  --color-prio-high-bg: var(--prio-high-bg);
+  --color-prio-high-fg: var(--prio-high-fg);
+  --color-prio-high-edge: var(--prio-high-edge);
+  --color-prio-med-bg: var(--prio-med-bg);
+  --color-prio-med-fg: var(--prio-med-fg);
+  --color-prio-med-edge: var(--prio-med-edge);
+  --color-prio-low-bg: var(--prio-low-bg);
+  --color-prio-low-fg: var(--prio-low-fg);
+  --color-prio-low-edge: var(--prio-low-edge);
+  --color-overdue-bg: var(--overdue-bg);
+  --color-overdue-fg: var(--overdue-fg);
+  --color-overdue-edge: var(--overdue-edge);
+  --color-today-bg: var(--today-bg);
+  --color-today-fg: var(--today-fg);
+  --color-today-edge: var(--today-edge);
+  --color-later-bg: var(--later-bg);
+  --color-later-fg: var(--later-fg);
+  --color-later-edge: var(--later-edge);
 }
 
+/* =====================================================================
+   Theme tokens: light
+   ===================================================================== */
 :root {
   --radius: 0.625rem;
+
   --background: #F4F3FF;
   --foreground: #14123B;
   --card: #ffffff;
@@ -58,27 +106,91 @@
   --secondary: #E6E3FF;
   --secondary-foreground: #14123B;
   --muted: #ECEAFB;
-  --muted-foreground: #58577F;
+  /* darker than the design system's #58577F so secondary text, keys and placeholders are easy to read (about 7.6:1) */
+  --muted-foreground: #4B4A6B;
   --accent: #EEEDFF;
   --accent-foreground: #3730A3;
+
   /* destructive: solid fill (buttons) / text + icons / soft badge background */
   --destructive: #B42318;
   --destructive-foreground: #ffffff;
   --destructive-text: #B42318;
   --destructive-subtle: #FDECEA;
-  --border: #D9D7F0;
-  --input: #D9D7F0;
+
+  /* cards get a clear line, inputs and outline buttons a stronger one (about 3:1) */
+  --border: #C4C1E4;
+  --input: #9894C2;
   --ring: #4F46E5;
+
   --sidebar: #ECEAFB;
   --sidebar-foreground: #14123B;
   --sidebar-primary: #4F46E5;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #E0DDFA;
   --sidebar-accent-foreground: #14123B;
-  --sidebar-border: #D9D7F0;
+  --sidebar-border: #C4C1E4;
   --sidebar-ring: #4F46E5;
+
+  /* board lanes: one tint per status (light only), a dot color in both themes */
+  --lane-todo: #E6E3FF;
+  --lane-progress: #FFE7A3;
+  --lane-review: #FFD2C7;
+  --lane-done: #C8F0D6;
+  --dot-todo: #6C63F0;
+  --dot-progress: #D9A100;
+  --dot-review: #E8765F;
+  --dot-done: #22A559;
+  --signal: #22C55E;
+
+  /* outline-style buttons get their own surface so they don't vanish into the page */
+  --control: #E8E6FB;
+  --control-hover: #DDDAF8;
+  --control-border: #B9B5DD;
+
+  /* fields sit on the surface color so they lift off the page */
+  --field: #ffffff;
+
+  /* AI actions: indigo tint */
+  --ai-bg: #E6E3FF;
+  --ai-fg: #3730A3;
+  --ai-edge: #C4C1E4;
+  --ai-hover: #DAD6FB;
+
+  /* group header (Sprint / Backlog): cool slate, different from page, rows and buttons */
+  --list-head: #E4E7F1;
+
+  /* priorities */
+  --prio-urgent-bg: #FDECEA;
+  --prio-urgent-fg: #B42318;
+  --prio-urgent-edge: #E7AFAA;
+  --prio-high-bg: #FFEDD4;
+  --prio-high-fg: #7E2A0C;
+  --prio-high-edge: #FFB86A;
+  --prio-med-bg: #E0F2FE;
+  --prio-med-fg: #075985;
+  --prio-med-edge: #BAE6FD;
+  --prio-low-bg: #F3F4F8;
+  --prio-low-fg: #3D4859;
+  --prio-low-edge: #AEB6C4;
+
+  /* due dates: overdue is rose (never reads as "urgent"), due today is amber, a far date stays neutral */
+  --overdue-bg: #FCE7F3;
+  --overdue-fg: #9D174D;
+  --overdue-edge: #F4A9CE;
+  --today-bg: #FEF6C9;
+  --today-fg: #6B4A00;
+  --today-edge: #F2D25B;
+  --later-bg: transparent;
+  --later-fg: #4B4A6B;
+  --later-edge: #C4C1E4;
+
+  /* soft shadow at the bottom of a scroll area that has hidden content (see ScrollShadow) */
+  --scroll-shadow: rgba(0, 0, 0, 0.25);
 }
 
+/* =====================================================================
+   Theme tokens: dark
+   ===================================================================== */
 .dark {
   --background: #17191F;
   --foreground: #E2E5EC;
@@ -90,19 +202,21 @@
   --primary-foreground: #ffffff;
   --secondary: #2A2E38;
   --secondary-foreground: #E2E5EC;
-  /* between --card (#1F222A) and --accent (#2A2E38) */
   --muted: #242831;
   --muted-foreground: #9AA1B0;
   --accent: #2A2E38;
   --accent-foreground: #C7C9FF;
-  /* solid fill keeps white text readable (4.8:1); light red moves to --destructive-text */
+
   --destructive: #DC2626;
   --destructive-foreground: #ffffff;
   --destructive-text: #FCA5A5;
   --destructive-subtle: #3B1D22;
+
   --border: #343845;
-  --input: #343845;
+  /* the design system uses #343845 here, too faint for a field edge (about 1.5:1); this is about 3:1 */
+  --input: #6B7385;
   --ring: #787CF5;
+
   --sidebar: #1A1D24;
   --sidebar-foreground: #E2E5EC;
   --sidebar-primary: #5E62E8;
@@ -111,8 +225,59 @@
   --sidebar-accent-foreground: #E2E5EC;
   --sidebar-border: #343845;
   --sidebar-ring: #787CF5;
+
+  --lane-todo: #1A1D24;
+  --lane-progress: #1A1D24;
+  --lane-review: #1A1D24;
+  --lane-done: #1A1D24;
+  --dot-todo: #8B8FF8;
+  --dot-progress: #F5C84C;
+  --dot-review: #F08C7A;
+  --dot-done: #4ADE80;
+  --signal: #4ADE80;
+
+  --control: #2A2E38;
+  --control-hover: #343945;
+  --control-border: #4A5060;
+
+  --field: #1F222A;
+
+  --ai-bg: rgba(94, 98, 232, 0.18);
+  --ai-fg: #C7C9FF;
+  --ai-edge: rgba(120, 124, 245, 0.45);
+  --ai-hover: rgba(94, 98, 232, 0.3);
+
+  --list-head: #2A2E38;
+
+  --prio-urgent-bg: #3B1D22;
+  --prio-urgent-fg: #FCA5A5;
+  --prio-urgent-edge: #75454A;
+  --prio-high-bg: #441306;
+  --prio-high-fg: #FFD6A8;
+  --prio-high-edge: #9F2D00;
+  --prio-med-bg: rgba(56, 189, 248, 0.13);
+  --prio-med-fg: #7DD3FC;
+  --prio-med-edge: rgba(56, 189, 248, 0.32);
+  --prio-low-bg: rgba(148, 163, 184, 0.07);
+  --prio-low-fg: #C5CCD8;
+  --prio-low-edge: rgba(148, 163, 184, 0.45);
+
+  --overdue-bg: rgba(244, 114, 182, 0.14);
+  --overdue-fg: #F9A8D4;
+  --overdue-edge: rgba(244, 114, 182, 0.4);
+  --today-bg: rgba(250, 204, 21, 0.14);
+  --today-fg: #FDE047;
+  --today-edge: rgba(250, 204, 21, 0.4);
+  --later-bg: transparent;
+  --later-fg: #9AA1B0;
+  --later-edge: #4A5060;
+
+  --scroll-shadow: rgba(255, 255, 255, 0.16);
 }
 
+/* =====================================================================
+   Base
+   ===================================================================== */
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -129,9 +294,125 @@
     min-height: 100dvh;
   }
 
-  /* Pointer cursor for buttons and button-like elements (shadcn/ui, Radix triggers) */
+  /* Pointer cursor for buttons and button-like elements */
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]):not(:disabled) {
     cursor: pointer;
+  }
+}
+
+/* Edge adds its own "reveal password" eye; we already ship a Show / Hide button, so hide Edge's. */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
+/* =====================================================================
+   Fields
+   ===================================================================== */
+
+/* Soft focus like the design system: the border leans toward the primary color and a halo fades out. */
+input:not([type="checkbox"]):not([type="radio"]),
+textarea {
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+input:not([type="checkbox"]):not([type="radio"]):focus-visible,
+textarea:focus-visible {
+  outline: none;
+  border-color: color-mix(in srgb, var(--primary) 55%, var(--input));
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--primary) 14%, transparent),
+    0 0 18px 2px color-mix(in srgb, var(--primary) 22%, transparent);
+}
+
+/* Invalid fields keep a full red border, with the same soft halo in red. */
+input[aria-invalid="true"]:focus-visible,
+textarea[aria-invalid="true"]:focus-visible {
+  border-color: var(--destructive);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--destructive) 16%, transparent),
+    0 0 18px 2px color-mix(in srgb, var(--destructive) 22%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  input,
+  textarea {
+    transition: none;
+  }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--foreground);
+  transition: background-color 600000s 0s, color 600000s 0s;
+}
+
+/* White (light) / surface (dark) instead of transparent.
+   Unlayered, so it beats shadcn's bg-transparent and dark:bg-input/30. */
+[data-slot="input"],
+[data-slot="textarea"],
+[data-slot="select-trigger"] {
+  background-color: var(--field);
+}
+
+/* =====================================================================
+   Buttons
+   Order matters: these rules have the same specificity, so the last one wins.
+   ===================================================================== */
+
+/* Outline buttons: their own surface, a hover color and a clearer border in both themes. */
+[data-slot="button"][class*="bg-background"] {
+  background-color: var(--control);
+  border-color: var(--control-border);
+}
+[data-slot="button"][class*="bg-background"]:hover:not(:disabled):not([aria-disabled="true"]) {
+  background-color: var(--control-hover);
+}
+
+/* AI buttons (Ask AI, Summarize, Generate todos, Plan sprint): indigo tint.
+   Usage: <Button variant="outline" className="ai-btn"> (AiButton already does it) */
+[data-slot="button"].ai-btn {
+  background-color: var(--ai-bg);
+  color: var(--ai-fg);
+  border-color: var(--ai-edge);
+}
+[data-slot="button"].ai-btn:hover:not(:disabled):not([aria-disabled="true"]) {
+  background-color: var(--ai-hover);
+}
+
+/* An outline button on the field surface (white in light), for example "Edit" on a sprint. */
+[data-slot="button"].btn-surface {
+  background-color: var(--field);
+}
+[data-slot="button"].btn-surface:hover:not(:disabled):not([aria-disabled="true"]) {
+  background-color: var(--accent);
+}
+
+/* =====================================================================
+   Small helpers
+   ===================================================================== */
+
+/* Ticket keys (KAN-2, KAN-10) line up with tabular numbers. */
+.ticket-key {
+  font-variant-numeric: tabular-nums;
+}
+
+/* The AI sparkle glows while any AI request is running (same idea as the design system's "thinking" state). */
+@keyframes ai-glow {
+  50% {
+    transform: scale(1.25);
+    opacity: 0.55;
+  }
+}
+.ai-spark-working {
+  animation: ai-glow 1s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-spark-working {
+    animation: none;
   }
 }

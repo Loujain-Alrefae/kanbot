@@ -49,8 +49,9 @@ export function SprintBoard({ board, onOpenTodo }: SprintBoardProps) {
 
     const dnd = useBoardDnd({ columns: board.columns, onMove: commitMove })
 
-    return (
+        return (
         <>
+        {/* Progress follows the cache (board.columns), not the drag copy: it must not change until the card is dropped. */}
         <SprintHeader
             sprint={board.sprint}
             totals={boardTotals(board.columns)}

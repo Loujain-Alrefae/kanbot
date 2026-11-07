@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useNavigate, useSearchParams } from "react-router"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { fieldErrors } from "@/api/client"
@@ -9,6 +10,10 @@ import { useLogin } from "../../hooks/useLogin"
 import { loginSchema, type LoginValues } from "./config"
 
 export function LoginForm() {
+    const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
+    const redirectTo = searchParams.get("redirect") || "/projects"
+
     const login = useLogin()
     const [formError, setFormError] = useState<string | null>(null)
 
@@ -22,22 +27,30 @@ export function LoginForm() {
         defaultValues: { email: "", password: "" },
     })
 
-    const onSubmit = handleSubmit((values) => {
+    const onSubmit = handleSubmit(async(values) => {
         setFormError(null)
-        login.mutate(values, {
-        onError: (err) => {
-            // Field-level server errors go under the field, everything else in the alert (AUTH-2).
-            let matched = false
-            for (const [name, message] of Object.entries(fieldErrors(err))) {
-            if (name === "email" || name === "password") {
-                setError(name, { message })
-                matched = true
+            try {
+                await login.mutateAsync(values)
+                
+                navigate(redirectTo, { replace: true })
+            } catch (err: unknown) {
+                let matched = false
+                for (const [name, message] of Object.entries(fieldErrors(err))) {
+                    if (name === "email" || name === "password") {
+                        setError(name, { message })
+                        matched = true
+                    }
+                }
+                if (!matched) {
+                    setFormError(
+                        err instanceof Error
+                            ? err.message
+                            : "An unexpected error occurred."
+                    )
+                }
             }
-            }
-            if (!matched) setFormError(err.message)
-        },
-        })
-    })
+        }
+    )
 
     return (
         <>
@@ -50,8 +63,8 @@ export function LoginForm() {
             </div>
         )}
 
-        <form onSubmit={onSubmit} noValidate className="space-y-4">
-            <div className="space-y-1.5">
+        <form onSubmit={onSubmit} noValidate className="space-y-5">
+            <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">Email</label>
             <Input
                 id="email"
@@ -66,7 +79,7 @@ export function LoginForm() {
             {errors.email && <p id="email-error" className="text-sm text-destructive">{errors.email.message}</p>}
             </div>
 
-            <div className="space-y-1.5">
+            <div className="space-y-2">
             <label htmlFor="password" className="text-sm font-medium">Password</label>
             <PasswordField
                 id="password"

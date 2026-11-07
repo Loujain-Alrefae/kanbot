@@ -9,11 +9,6 @@ export interface DueInfo {
     label: string
 }
 
-/*
- * Due-date status of a todo, or null when there is nothing to show:
- * no due date, or the todo is done (a finished todo can't be late).
- * Counts calendar days, so the time of day never matters.
- */
 export function dueInfo(dueDate: string | null, status: TodoStatus): DueInfo | null {
     if (!dueDate || status === "done") return null
 

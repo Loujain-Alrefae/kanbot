@@ -3,6 +3,7 @@ import { GuestRoute, ProtectedRoute } from "@/features/auth/components/RouteGuar
 import { LoginPage } from "@/features/auth/pages/LoginPage"
 import { RegisterPage } from "@/features/auth/pages/RegisterPage"
 import { AppShell } from "@/components/layout/AppShell"
+import { RouteErrorPage } from "@/components/RouteErrorPage"
 import { ProjectsPage } from "@/features/projects/pages/ProjectsPage"
 import { BacklogPage } from "@/features/backlog/pages/BacklogPage"
 import { BoardPage } from "@/features/board/pages/BoardPage"
@@ -12,33 +13,39 @@ import { NotFoundPage } from "@/features/errors/pages/NotFoundPage"
 
 export const router = createBrowserRouter([
   {
-    element: <GuestRoute />,
-    children: [
-      { path: "/login", element: <LoginPage /> },
-      { path: "/register", element: <RegisterPage /> },
-    ],
-  },
-  {
-    element: <ProtectedRoute />,
+    // Pathless root: any error thrown while rendering a page below ends here instead of React Router's default screen.
+    errorElement: <RouteErrorPage />,
     children: [
       {
-        element: <AppShell />,
+        element: <GuestRoute />,
         children: [
-          { path: "/projects", element: <ProjectsPage /> },
+          { path: "/login", element: <LoginPage /> },
+          { path: "/register", element: <RegisterPage /> },
+        ],
+      },
+      {
+        element: <ProtectedRoute />,
+        children: [
           {
-            path: "/projects/:projectId",
-            element: <ProjectRoute />,
+            element: <AppShell />,
             children: [
-              { index: true, element: <Navigate to="backlog" replace /> },
-              { path: "backlog", element: <BacklogPage /> },
-              { path: "board", element: <BoardPage /> },
-              { path: "sprints/:sprintId?", element: <SprintsPage /> },
+              { path: "/projects", element: <ProjectsPage /> },
+              {
+                path: "/projects/:projectId",
+                element: <ProjectRoute />,
+                children: [
+                  { index: true, element: <Navigate to="backlog" replace /> },
+                  { path: "backlog", element: <BacklogPage /> },
+                  { path: "board", element: <BoardPage /> },
+                  { path: "sprints/:sprintId?", element: <SprintsPage /> },
+                ],
+              },
             ],
           },
         ],
       },
+      { path: "/", element: <Navigate to="/projects" replace /> },
+      { path: "*", element: <NotFoundPage /> },
     ],
   },
-  { path: "/", element: <Navigate to="/projects" replace /> },
-  { path: "*", element: <NotFoundPage /> },]
-)
+])

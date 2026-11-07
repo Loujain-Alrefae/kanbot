@@ -1,4 +1,5 @@
 import type { CSSProperties, ReactNode, Ref } from "react"
+import { DueDateBadge } from "@/features/todos/components/DueDateBadge"
 import { LabelChips } from "@/features/todos/components/LabelChips"
 import { PointsPill } from "@/features/todos/components/PointsPill"
 import { PriorityBadge } from "@/features/todos/components/PriorityBadge"
@@ -6,30 +7,20 @@ import { TypeIcon } from "@/features/todos/components/TypeIcon"
 import { cn } from "@/lib/utils"
 import type { Sprint, Todo } from "@/types/api"
 import { TodoRowMenu } from "./TodoRowMenu"
-import { DueDateBadge } from "@/features/todos/components/DueDateBadge"
 
 interface TodoRowProps {
-  todo: Todo
-  /** Planned and active sprints, for the "Move to…" items of the row menu. */
-  moveTargets: Sprint[]
-  onOpen: (todo: Todo) => void
-  /** Drag handle (backlog rows only). Rows without one keep the same blank column, so everything lines up. */
-  handle?: ReactNode
-  /** Backlog rows only: where the row is in the list, used to disable "Move to top/bottom" when already there. */
-  listPosition?: { index: number; count: number } | null
-  /** Backlog rows only: shows "Move to top" and "Move to bottom" in the menu. */
-  onMoveToEdge?: (todo: Todo, edge: "top" | "bottom") => void
-  /** dnd-kit passes these through SortableTodoRow. */
-  rowRef?: Ref<HTMLLIElement>
-  style?: CSSProperties
-  dragging?: boolean
+    todo: Todo
+    moveTargets: Sprint[]
+    onOpen: (todo: Todo) => void
+    handle?: ReactNode
+    listPosition?: { index: number; count: number } | null
+    onMoveToEdge?: (todo: Todo, edge: "top" | "bottom") => void
+    rowRef?: Ref<HTMLLIElement>
+    style?: CSSProperties
+    dragging?: boolean
 }
 
-/*
- * One backlog row. The title is the only focusable control and its ::after stretches over the whole row,
- * so a click anywhere opens the todo. The handle and the "···" menu are SIBLINGS of that button with
- * `relative z-10`, so they sit above the stretched area and their clicks never open the details.
- */
+
 export function TodoRow({
     todo,
     moveTargets,
@@ -46,35 +37,54 @@ export function TodoRow({
         ref={rowRef}
         style={style}
         className={cn(
-            "relative flex items-center gap-3 border-b px-4 py-2 transition-colors last:border-b-0 hover:bg-accent focus-within:bg-accent motion-reduce:transition-none!",
+            "relative flex items-start gap-3 border-b px-3 py-2.5 transition-colors last:border-b-0 hover:bg-accent focus-within:bg-accent motion-reduce:transition-none! @2xl:items-center @2xl:px-4 @2xl:py-2",
             dragging && "z-20 bg-card shadow-lg ring-1 ring-ring hover:bg-card focus-within:bg-card",
         )}
         >
-        {handle ? <div className="relative z-10 w-7 shrink-0">{handle}</div> : <div className="w-7 shrink-0" aria-hidden="true" />}
+        {handle ? (
+            <div className="relative z-10 mt-0.5 w-7 shrink-0 @2xl:mt-0">{handle}</div>
+        ) : (
+            // Rows without a handle (sprint sections) keep the blank column only in the wide layout, so everything lines up.
+            <div className="hidden w-7 shrink-0 @2xl:block" aria-hidden="true" />
+        )}
 
-        <span className="w-16 shrink-0 text-xs tabular-nums text-muted-foreground">{todo.key}</span>
+        <div className="flex min-w-0 flex-1 flex-col gap-1.5 @2xl:contents">
+            <span className="text-xs tabular-nums text-muted-foreground @2xl:w-16 @2xl:shrink-0">{todo.key}</span>
 
-        <div className="flex min-w-0 flex-1 items-center gap-2">
+            <div className="flex min-w-0 items-center gap-2 @2xl:flex-1">
             <button
-            type="button"
-            onClick={() => onOpen(todo)}
-            className="min-w-0 truncate text-left text-sm font-medium outline-none after:absolute after:inset-0 after:rounded-sm focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring"
+                type="button"
+                onClick={() => onOpen(todo)}
+                className="min-w-0 text-left text-sm font-medium wrap-break-word whitespace-normal outline-none after:absolute after:inset-0 after:rounded-sm focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-ring @2xl:truncate"
             >
-            {todo.title}
+                {todo.title}
             </button>
-            <LabelChips labels={todo.labels} max={2} className="shrink-0" />
-            <DueDateBadge todo={todo} className="shrink-0" />
+
+            {/* Wide layout: labels and due date sit right after the title. */}
+            <div className="hidden shrink-0 items-center gap-2 @2xl:flex">
+                <LabelChips labels={todo.labels} max={2} className="shrink-0" />
+                <DueDateBadge todo={todo} className="shrink-0" />
+            </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 @2xl:contents">
+            <div className="@2xl:w-20 @2xl:shrink-0">
+                <TypeIcon type={todo.type} />
+            </div>
+            <div className="@2xl:w-24 @2xl:shrink-0">
+                <PriorityBadge priority={todo.priority} />
+            </div>
+            <PointsPill points={todo.storyPoints} className="shrink-0" />
+
+            {/* Narrow layout: labels and due date join the chips under the title. */}
+            <div className="contents @2xl:hidden">
+                <LabelChips labels={todo.labels} max={2} />
+                <DueDateBadge todo={todo} />
+            </div>
+            </div>
         </div>
 
-        <div className="w-20 shrink-0">
-            <TypeIcon type={todo.type} />
-        </div>
-        <div className="w-24 shrink-0">
-            <PriorityBadge priority={todo.priority} />
-        </div>
-        <PointsPill points={todo.storyPoints} className="shrink-0" />
-
-        <div className="relative z-10 w-8 shrink-0">
+        <div className="relative z-10 -mt-1 w-8 shrink-0 @2xl:mt-0">
             <TodoRowMenu todo={todo} moveTargets={moveTargets} listPosition={listPosition} onMoveToEdge={onMoveToEdge} />
         </div>
         </li>

@@ -1,5 +1,8 @@
 import { Skeleton } from "@/components/ui/skeleton"
 
+const LANES = ["bg-lane-todo", "bg-lane-progress", "bg-lane-review", "bg-lane-done"]
+
+/* Same header card and lane tints as the real board, so nothing jumps when the data arrives. */
 export function BoardSkeleton() {
     return (
         <div aria-busy="true" className="space-y-4">
@@ -12,11 +15,11 @@ export function BoardSkeleton() {
         </div>
 
         <div className="grid auto-cols-[minmax(16rem,1fr)] grid-flow-col gap-4 overflow-x-auto">
-            {Array.from({ length: 4 }, (_, column) => (
-            <div key={column} className="min-h-64 space-y-2 rounded-lg bg-muted p-3">
-                <Skeleton className="mb-3 h-4 w-24 bg-border" />
+            {LANES.map((lane, column) => (
+            <div key={lane} className={`min-h-64 space-y-2 rounded-[14px] p-2.5 ${lane}`}>
+                <Skeleton className="mb-3 h-4 w-24 bg-foreground/10" />
                 {Array.from({ length: 3 - (column % 2) }, (_, card) => (
-                <div key={card} className="space-y-2 rounded-lg border bg-card p-3">
+                <div key={card} className="space-y-2 rounded-xl border bg-card px-3 py-2.5">
                     <Skeleton className="h-3 w-12 bg-secondary" />
                     <Skeleton className="h-4 w-full bg-secondary" />
                     <Skeleton className="h-5 w-28 bg-secondary" />

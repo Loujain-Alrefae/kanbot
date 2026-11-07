@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
-import { useForm } from "react-hook-form"
+import { useForm , useWatch} from "react-hook-form"
 import { useNavigate } from "react-router"
 import { toast } from "sonner"
 import { z } from "zod"
@@ -51,8 +51,7 @@ export function StartSprintDialog({ projectId, sprint, activeSprint, onClose }: 
         register,
         formState: { errors },
     } = form
-    const startDate = form.watch("startDate")
-
+    const startDate = useWatch({ control: form.control, name: "startDate" })
     const blockedMessage = activeSprint
         ? `${activeSprint.name} is already active. Complete it before starting another sprint.`
         : null

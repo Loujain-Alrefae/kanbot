@@ -20,6 +20,7 @@ import type { FilterState } from "../filters"
 import { StartSprintDialog } from "@/features/sprints/components/StartSprintDialog"
 
 export function BacklogPage() {
+    //throw new Error("test");
     const { projectId } = useParams()
     if (!projectId) return null // the route always has :projectId; this only narrows the type
 
@@ -145,7 +146,7 @@ function BacklogView({ projectId }: { projectId: string }) {
     return (
         <>
         <PageHeader title="Backlog" meta={planningTodos ? summarizeTodos(planningTodos) : undefined} />
-        <div className="space-y-4 p-6">
+        <div className="space-y-4 p-4 sm:p-6">
             {/* Outside the loading switch: the search box must keep its focus while results reload. */}
             <BacklogToolbar
             filters={filters}

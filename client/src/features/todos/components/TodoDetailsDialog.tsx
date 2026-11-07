@@ -21,6 +21,7 @@ import type { TodoFormValues } from "./todoDetails/config"
 import { AiButton } from "@/features/ai/components/AiButton"
 import { buildImprovePrompt } from "@/features/ai/lib/prompts"
 import { useAiUiStore } from "@/store/ai-ui.store"
+import { ScrollShadow } from "@/components/ScrollShadow"
 
 interface TodoDetailsDialogProps {
   projectId: string
@@ -48,13 +49,13 @@ export function TodoDetailsDialog({ projectId, todoId, onClose }: TodoDetailsDia
       }}
     >
       <DialogContent className="gap-0 p-0 sm:max-w-[min(48rem,calc(100%-4rem))]">
-        <DialogHeader className="border-b px-6 py-4">
+        <DialogHeader className="border-b px-4 py-3 sm:px-6 sm:py-4">
           <DialogTitle>Todo details</DialogTitle>
           <DialogDescription className="sr-only">Loading the todo</DialogDescription>
         </DialogHeader>
 
         {todoQuery.isError ? (
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             <ErrorState message={todoQuery.error.message} onRetry={() => todoQuery.refetch()} />
           </div>
         ) : (
@@ -67,7 +68,7 @@ export function TodoDetailsDialog({ projectId, todoId, onClose }: TodoDetailsDia
 
 function DialogSkeleton() {
   return (
-    <div aria-busy="true" className="grid gap-6 px-6 py-5 md:grid-cols-[minmax(0,1fr)_17rem]">
+    <div aria-busy="true" className="grid gap-6 px-4 py-4 sm:px-6 sm:py-5 md:grid-cols-[minmax(0,1fr)_17rem]">
       <span className="sr-only">Loading todo…</span>
       <div className="space-y-4">
         <Skeleton className="h-9 w-full bg-secondary" />
@@ -165,8 +166,9 @@ function LoadedTodoDialog({ todo, projectId, onClose }: LoadedTodoDialogProps) {
         if (!open) requestClose()
       }}
     >
-      <DialogContent className="flex max-h-[90dvh] flex-col gap-0 p-0 sm:max-w-[min(48rem,calc(100%-4rem))]">
-        <DialogHeader className="flex-row items-center gap-3 border-b px-6 py-4 pr-12 text-left">
+      <DialogContent className="flex max-h-[calc(100dvh-2rem)] flex-col gap-0 p-0 sm:max-w-[min(48rem,calc(100%-4rem))]">
+        {/* pr-12 keeps the title clear of the close button; sm:pr-12 repeats it because sm:px-6 would reset it. */}
+        <DialogHeader className="flex-row items-center gap-3 border-b px-4 py-3 pr-12 text-left sm:px-6 sm:py-4 sm:pr-12">
           <DialogTitle className="rounded bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
             {todo.key}
           </DialogTitle>
@@ -175,8 +177,7 @@ function LoadedTodoDialog({ todo, projectId, onClose }: LoadedTodoDialogProps) {
           </DialogDescription>
         </DialogHeader>
 
-
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+        <ScrollShadow className="px-6 py-5">
           <TodoDetailsForm
             form={form}
             onSubmit={handleSave}
@@ -184,15 +185,23 @@ function LoadedTodoDialog({ todo, projectId, onClose }: LoadedTodoDialogProps) {
             sprintDisabled={locked || sprints.isPending}
             sprintHint={locked ? "Todos in a completed sprint can't be moved." : undefined}
             sprintPlaceholder={sprints.isPending ? "Loading…" : "Unknown sprint"}
+            projectId={projectId}
           />
-        </div>
+        </ScrollShadow>
 
-        <div className="flex items-center justify-between gap-3 border-t px-6 py-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <Button type="button" variant="destructive" onClick={() => setConfirmDelete(true)} disabled={busy}>
+        <div className="flex flex-col gap-2 border-t px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:flex-row sm:items-center sm:justify-between sm:gap-3 sm:px-6 sm:py-4">
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="destructive"
+              className="max-sm:h-11"
+              onClick={() => setConfirmDelete(true)}
+              disabled={busy}
+            >
               Delete
             </Button>
             <AiButton
+              className="flex-1 max-sm:h-11 sm:flex-none"
               onClick={handleImprove}
               disabled={busy || isDirty}
               title={isDirty ? "Save or discard your changes first" : undefined}
@@ -200,11 +209,12 @@ function LoadedTodoDialog({ todo, projectId, onClose }: LoadedTodoDialogProps) {
               Improve with AI
             </AiButton>
           </div>
-          <div className="flex gap-2">
-            <Button type="button" variant="outline" onClick={requestClose} disabled={busy}>
+
+          <div className="grid grid-cols-2 gap-2 sm:flex">
+            <Button type="button" variant="outline" className="max-sm:h-11" onClick={requestClose} disabled={busy}>
               Cancel
             </Button>
-            <Button type="submit" form="todo-details-form" disabled={busy}>
+            <Button type="submit" form="todo-details-form" className="max-sm:h-11" disabled={busy}>
               {updateTodo.isPending && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
               Save
             </Button>
@@ -222,15 +232,15 @@ function LoadedTodoDialog({ todo, projectId, onClose }: LoadedTodoDialogProps) {
           onConfirm={onClose}
         />
         <ConfirmDialog
-            open={confirmDelete}
-            onOpenChange={setConfirmDelete}
-            title="Delete todo?"
-            description={`${todo.key} "${todo.title}" will be permanently deleted. This can't be undone.`}
-            confirmLabel="Delete"
-            loading={deleteTodo.isPending}
-            onConfirm={() => deleteTodo.mutate(todo.id, { onSuccess: onClose })}
-            />
-        </DialogContent>
-        </Dialog>
-    )
+          open={confirmDelete}
+          onOpenChange={setConfirmDelete}
+          title="Delete todo?"
+          description={`${todo.key} "${todo.title}" will be permanently deleted. This can't be undone.`}
+          confirmLabel="Delete"
+          loading={deleteTodo.isPending}
+          onConfirm={() => deleteTodo.mutate(todo.id, { onSuccess: onClose })}
+        />
+      </DialogContent>
+    </Dialog>
+  )
 }
