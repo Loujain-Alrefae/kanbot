@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Skeleton } from "@/components/ui/skeleton"
 import { useActiveSprint } from "@/hooks/useSprints"
 import { SprintSummary } from "./SprintSummary"
+import { ScrollShadow } from "@/components/ScrollShadow"
 
 /* Summary of the ACTIVE sprint (opened from the board and from the assistant drawer). Mount only while open. */
 export function SprintSummaryDialog({ projectId, onClose }: { projectId: string; onClose: () => void }) {
@@ -36,8 +37,8 @@ export function SprintSummaryDialog({ projectId, onClose }: { projectId: string;
             <DialogDescription className="sr-only">AI summary of the active sprint</DialogDescription>
             </DialogHeader>
 
-            <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">{body}</div>
-
+            {/* <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">{body}</div> */}
+<ScrollShadow className="px-6 py-5">{body}</ScrollShadow>
             <div className="flex shrink-0 justify-end border-t px-6 py-4">
             <Button type="button" variant="outline" onClick={onClose}>
                 Close
