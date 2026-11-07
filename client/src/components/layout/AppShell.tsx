@@ -28,12 +28,12 @@ export function AppShell() {
 
         <div className="flex min-w-0 flex-1 flex-col">
             {/* Below 1024px: top bar with a menu button that opens the full sidebar in a sheet */}
-            <div className="flex items-center gap-2 border-b px-4 py-2 lg:hidden">
+            <div className="flex items-center gap-2 border-b px-2.5 py-2 lg:hidden">
             <Button variant="ghost" size="icon" aria-label="Open menu" onClick={() => setMobileOpen(true)}>
                 <Menu className="size-6" aria-hidden="true" />
             </Button>
             <img src={icon} alt="" width={30} height={30} />
-            <span className="text-xl font-extrabold tracking-tight">Kanbot</span>
+            <span className="font-display text-xl font-extrabold tracking-tight">Kanbot</span>
             </div>
             <main className="min-w-0 flex-1">
             <Outlet />
