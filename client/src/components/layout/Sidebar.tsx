@@ -153,7 +153,6 @@ export function Sidebar({ collapsed = false, showToggle = false, onNavigate }: S
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-0.5">
-                <ThemeToggle className="size-8" />
                 <Button variant="ghost" size="icon" className="size-8" onClick={logout} aria-label="Log out" title="Log out">
                   <LogOut className="size-5" aria-hidden="true" />
                 </Button>

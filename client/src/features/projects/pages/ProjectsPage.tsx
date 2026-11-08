@@ -7,12 +7,24 @@ import { PageHeader } from "@/components/layout/PageHeader"
 import { EmptyState } from "@/components/EmptyState"
 import { ErrorState } from "@/components/ErrorState"
 import { ConfirmDialog } from "@/components/ConfirmDialog"
+import { ThemeToggle } from "@/components/ThemeToggle"
 import { useDeleteProject, useProjects } from "@/hooks/useProjects"
+import { cn } from "@/lib/utils"
 import type { ProjectWithStats } from "@/types/api"
 import { ProjectCard } from "../components/ProjectCard"
 import { ProjectDialog } from "../components/ProjectDialog"
 
 type DialogState = { mode: "create" } | { mode: "edit"; project: ProjectWithStats } | null
+
+/* The one solid indigo button of the screen: 42px, like the toolbar buttons of the design system. */
+function NewProjectButton({ onClick, className }: { onClick: () => void; className?: string }) {
+    return (
+        <Button className={cn("h-10.5 gap-1.5 px-4.5 text-sm font-semibold", className)} onClick={onClick}>
+        <Plus className="size-4" aria-hidden="true" />
+        New project
+        </Button>
+    )
+}
 
 export function ProjectsPage() {
     const { data, isPending, isError, error, refetch } = useProjects()
@@ -23,29 +35,23 @@ export function ProjectsPage() {
     const [dialog, setDialog] = useState<DialogState>(null)
     const [toDelete, setToDelete] = useState<ProjectWithStats | null>(null)
 
-  // Search is a local filter over the loaded list (name, key, description).
+    // Search is a local filter over the loaded list (name, key, description).
     const filtered = useMemo(() => {
         const q = search.trim().toLowerCase()
         if (!projects || !q) return projects ?? []
         return projects.filter((p) => [p.name, p.key, p.description].some((v) => v.toLowerCase().includes(q)))
-    }, [projects, search]
-    )
+    }, [projects, search])
 
-    const newProjectButton = (
-        <Button onClick={() => setDialog({ mode: "create" })}>
-        <Plus className="size-4" aria-hidden="true" />
-        New project
-        </Button>
-    )
+    const openCreate = () => setDialog({ mode: "create" })
 
     const count = projects?.length ?? 0
     const meta = projects ? `${count} ${count === 1 ? "project" : "projects"}` : undefined
 
     return (
         <>
-        <PageHeader title="Projects" meta={meta} actions={newProjectButton} />
+        <PageHeader title="Projects" meta={meta} actions={<ThemeToggle variant="outline" className="size-10" />} />
 
-        <div className="space-y-6 p-6">
+        <div className="space-y-6 p-4 sm:p-6">
             {isPending && (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" aria-busy="true" aria-label="Loading projects">
                 {Array.from({ length: 6 }).map((_, i) => (
@@ -61,21 +67,25 @@ export function ProjectsPage() {
                 icon={<FolderPlus className="size-6" aria-hidden="true" />}
                 title="No projects yet"
                 description="Create your first project to start planning sprints."
-                action={newProjectButton}
+                action={<NewProjectButton onClick={openCreate} />}
             />
             )}
 
             {projects && projects.length > 0 && (
             <>
+                {/* Search on the left, "New project" on the right, same height. Narrow screens: one under the other, full width. */}
+                <div className="flex flex-wrap items-center justify-between gap-2.5">
                 <Input
-                type="search"
-                value={search}
-                data-hotkey="search"
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search projects…"
-                aria-label="Search projects"
-                className="h-10 max-w-xs"
+                    type="search"
+                    value={search}
+                    data-hotkey="search"
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search projects…"
+                    aria-label="Search projects"
+                    className="h-10.5 w-full hover:border-muted-foreground sm:max-w-xs"
                 />
+                <NewProjectButton onClick={openCreate} className="w-full sm:w-auto" />
+                </div>
 
                 {filtered.length === 0 ? (
                 <p className="py-10 text-center text-sm text-muted-foreground">
@@ -93,7 +103,7 @@ export function ProjectsPage() {
                     ))}
                     <button
                     type="button"
-                    onClick={() => setDialog({ mode: "create" })}
+                    onClick={openCreate}
                     className="flex min-h-44 items-center justify-center gap-2 rounded-2xl border-2 border-dashed text-sm font-medium text-muted-foreground transition-colors hover:border-primary/60 hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring"
                     >
                     <Plus className="size-4" aria-hidden="true" />

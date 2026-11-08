@@ -38,7 +38,7 @@ export function SprintSummaryDialog({ projectId, onClose }: { projectId: string;
             </DialogHeader>
 
             {/* <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">{body}</div> */}
-<ScrollShadow className="px-6 py-5">{body}</ScrollShadow>
+            <ScrollShadow className="px-6 py-5">{body}</ScrollShadow>
             <div className="flex shrink-0 justify-end border-t px-6 py-4">
             <Button type="button" variant="outline" onClick={onClose}>
                 Close
