@@ -10,7 +10,6 @@ import {
   type LucideIcon,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/ThemeToggle"
 import { useLogout } from "@/features/auth/hooks/useLogout"
 import { useAuthStore } from "@/store/auth.store"
 import { useSidebarStore } from "@/store/sidebar.store"
