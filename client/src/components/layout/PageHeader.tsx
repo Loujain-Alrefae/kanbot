@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import { useMatch } from "react-router"
+import { ThemeToggle } from "@/components/ThemeToggle"
 import { AskAiButton } from "@/features/ai/components/AskAiButton"
 
 interface PageHeaderProps {
@@ -9,7 +10,7 @@ interface PageHeaderProps {
 }
 
 export function PageHeader({ title, meta, actions }: PageHeaderProps) {
-    // Ask AI exists only inside a project (the AI needs a project for context). useMatch reads the URL directly.
+  // Ask AI exists only inside a project (the AI needs a project for context). useMatch reads the URL directly.
     const inProject = useMatch("/projects/:projectId/*") !== null
 
     return (
@@ -18,12 +19,12 @@ export function PageHeader({ title, meta, actions }: PageHeaderProps) {
             <h1 className="font-display text-xl font-extrabold tracking-tight">{title}</h1>
             {meta && <span className="text-sm text-muted-foreground">{meta}</span>}
         </div>
-        {(actions || inProject) && (
-            <div className="flex items-center gap-2">
+
+        <div className="flex items-center gap-4">
             {actions}
             {inProject && <AskAiButton />}
-            </div>
-        )}
-        </header>
+            <ThemeToggle variant="outline" className="hidden size-10 lg:inline-flex" />
+        </div>
+    </header>
     )
 }

@@ -7,7 +7,6 @@ import { PageHeader } from "@/components/layout/PageHeader"
 import { EmptyState } from "@/components/EmptyState"
 import { ErrorState } from "@/components/ErrorState"
 import { ConfirmDialog } from "@/components/ConfirmDialog"
-import { ThemeToggle } from "@/components/ThemeToggle"
 import { useDeleteProject, useProjects } from "@/hooks/useProjects"
 import { cn } from "@/lib/utils"
 import type { ProjectWithStats } from "@/types/api"
@@ -49,7 +48,7 @@ export function ProjectsPage() {
 
     return (
         <>
-        <PageHeader title="Projects" meta={meta} actions={<ThemeToggle variant="outline" className="size-10" />} />
+        <PageHeader title="Projects" meta={meta} />
 
         <div className="space-y-6 p-4 sm:p-6">
             {isPending && (

@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import icon from "@/assets/kanbot-icon.svg"
 import { Sidebar } from "./Sidebar"
 import { Hotkeys } from "@/features/shortcuts/Hotkeys"
+import { ThemeToggle } from "../ThemeToggle"
 
 export function AppShell() {
     const [mobileOpen, setMobileOpen] = useState(false)
@@ -28,13 +29,23 @@ export function AppShell() {
 
         <div className="flex min-w-0 flex-1 flex-col">
             {/* Below 1024px: top bar with a menu button that opens the full sidebar in a sheet */}
-            <div className="flex items-center gap-2 border-b px-2.5 py-2 lg:hidden">
-            <Button variant="ghost" size="icon" aria-label="Open menu" onClick={() => setMobileOpen(true)}>
-                <Menu className="size-6" aria-hidden="true" />
-            </Button>
-            <img src={icon} alt="" width={30} height={30} />
-            <span className="font-display text-xl font-extrabold tracking-tight">Kanbot</span>
-            </div>
+                <div className="flex items-center justify-between gap-2 border-b px-4 py-2 sm:px-6 lg:hidden">
+                <div className="flex items-center gap-2">
+                    <Button
+                    variant="ghost"
+                    size="icon"
+                    className="-ml-2 size-10"
+                    aria-label="Open menu"
+                    onClick={() => setMobileOpen(true)}
+                    >
+                    <Menu className="size-6" aria-hidden="true" />
+                    </Button>
+                    <img src={icon} alt="" width={30} height={30} />
+                    <span className="font-display text-xl font-extrabold tracking-tight">Kanbot</span>
+                </div>
+                <ThemeToggle variant="outline" className="size-10" />
+                </div>
+                
             <main className="min-w-0 flex-1">
             <Outlet />
             </main>
